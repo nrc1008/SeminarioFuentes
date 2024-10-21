@@ -1,4 +1,4 @@
-# SeminarioFuentes
+# Relación entre la exposición a la luz solar y el desarrolllo de cataratas.
 Integrantes: Niamey Rey Clar, Claudia Tundidor Zamora y María Gómez Aparicio. 
 
 Introducción: temática con referencias (teoría explicada) y objetivos.
