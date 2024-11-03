@@ -1,11 +1,19 @@
 ---
 title: "seminario fuentes"
-author: "Las mejores"
+author: "Niamey Rey,María Gómez, Claudia Tundidor"
 date: "`r Sys.Date()`"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
+install.packages("jsonlite")
+install.packages("pxR")
+
+
+library(ggplot2)
+library(jsonlite)
+library(pxR)
+
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
