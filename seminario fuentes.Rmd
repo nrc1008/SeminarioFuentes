@@ -1,21 +1,47 @@
 ---
-title: "seminario fuentes"
-author: "Niamey Rey,María Gómez, Claudia Tundidor"
+title: "Relación entre la exposición a la luz solar y el desarrollo de cataratas"
+subtitle: "Fuentes de datos biomédicas y web semántica"
+author: "Niamey Rey, María Gómez, Claudia Tundidor"
 date: "`r Sys.Date()`"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
-install.packages("jsonlite")
-install.packages("pxR")
+#install.packages("jsonlite")
+#install.packages("pxR")
 
 
-library(ggplot2)
-library(jsonlite)
-library(pxR)
+#library(ggplot2)
+#library(jsonlite)
+#library(pxR)
 
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE) 
 ```
+
+# **Introducción**
+En este seminario se va a tratar la posible relación entre la exposición a la luz solar con el desarrollo de cataratas, una enfermedad que causa la opacidad parcial o total del cristalino. Esta enfermedad es comunmente asociada a la edad, pero trataremos su posible relación con la luz solar.
+
+
+## **Objetivos**
+Determinar la relación entre la exposición a la luz solar y el desarrollo de cataratas, evaluando como la radiación solar influye en la incidencia de esta enfermedad ocular
+
+### **Objetivos específicos**
+Nos centraremos en unos objetivos específicos:
+
+1. ¿Cuál es la distribución geográfica y temporal de la incidencia de cataratas en la población de estudio?
+2. ¿Qué niveles de exposición a la luz solar se registran en las distintas regiones y cómo varían a lo largo del tiempo?
+3. ¿Existe una correlación estadísticamente significativa entre los niveles de exposición a la luz solar y la incidencia de cataratas?
+
+# **Materiales y métodos**
+
+## **Estudios relacionados**
+La relación entre la aparición de cataratas y la exposición a la luz solar ha sido objeto de estudio durante muchos años, y la evidencia científica sugiere que sí existe una relación
+
+Algunos que hemos encontrado:
+ Primero, este [estudio](https://www.nei.nih.gov/about/news-and-events/news/unas-nuevas-investigaciones-exploran-como-los-rayos-uv-contribuyen-las-cataratas)
+ 
+ También , de la clínica oftolmatológica de Londres, este [estudio](https://www.eyecliniclondon.com/blog/sun-cause-cataracts/)
+ 
 
 ## R Markdown
 
