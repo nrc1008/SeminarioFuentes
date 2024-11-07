@@ -1,0 +1,47 @@
+AXIS-VERSION="2006";
+CREATION-DATE="20241107";
+CHARSET="ANSI";
+SUBJECT-AREA="MODULO I. ESTADO DE SALUD";
+SUBJECT-CODE="null";
+MATRIX="01004";
+TITLE="Problemas o enfermedades crónicas o de larga evolución padecidas en los últimos 12 meses y diagnosticadas por un médico según sexo y comunidad autónoma. Población de 15 y más años. Coeficiente de variación";
+CONTENTS="Problemas o enfermedades crónicas o de larga evolución padecidas en los últimos 12 meses y diagnosticadas";
+CODEPAGE="iso-8859-15";
+DESCRIPTION="";
+COPYRIGHT=YES;
+NOTE="1) El símbolo '.' debe interpretarse como dato que no se proporciona por mues"
+"tra insuficiente# El símbolo '..' debe interpretarse como dato que no se reco"
+"ge para esa clasificación de la tabla# El símbolo '...' debe interpretarse co"
+"mo error de división por cero# Los datos correspondientes a celdas con menos "
+"de 35 mil personas han de ser tomados con precaución, ya que pueden estar afe"
+"ctados de elevados errores de muestreo";
+DECIMALS=2;
+SHOWDECIMALS=2;
+STUB="Sexo","Comunidad autónoma";
+HEADING="Enfermedades","Sí o no";
+VALUES("Sexo")="Ambos sexos","Hombres","Mujeres";
+VALUES("Comunidad autónoma")="Total Nacional","01 Andalucía","02 Aragón","03 Asturias, Principado de",
+"04 Balears, Illes","05 Canarias","06 Cantabria","07 Castilla y León",
+"08 Castilla - La Mancha","09 Cataluña","10 Comunitat Valenciana","11 Extremadura",
+"12 Galicia","13 Madrid, Comunidad de","14 Murcia, Región de",
+"15 Navarra, Comunidad Foral de","16 País Vasco","17 Rioja, La","18 Ceuta",
+"19 Melilla";
+VALUES("Enfermedades")="Úlcera de estómago o duodeno",
+"Incontinencia urinaria o problemas de control de la orina","Colesterol alto",
+"Cataratas","Problemas crónicos de piel","Estreñimiento crónico",
+"Cirrosis, disfunción hepática";
+VALUES("Sí o no")="Sí";
+CODES("Comunidad autónoma")="CA00","CA01","CA02","CA03","CA04","CA05","CA06","CA07","CA08","CA09","CA10","CA11","CA12",
+"CA13","CA14","CA15","CA16","CA17","CA18","CA19";
+MAP("Comunidad autónoma")="spain_regions_img_ind";
+SOURCE="Instituto Nacional de Estadística";
+UNITS="porcentaje";
+DATA=7.13 4.22 1.96 3.73 4.2 4.82 9.95 18.18 12.42 5.53 10.1 12.47 14.68 27.45 60.48 15.92 8.5 15.43 25.27 24.41 57.69 16.82 14.44 7.94 12.07 14.69 14.78 37.84 89.9 33.23 14.96 31.74 30.0 34.45 71.55 31.44 20.86 8.2 15.38 18.02 18.74 33.24 48.7 26.26 8.35 20.56 29.01 30.1 48.2 42.48
+ 14.1 7.04 12.75 14.37 21.96 59.33 28.98 21.31 7.73 14.91 24.38 23.91 39.17 21.9 13.04 6.94 13.02 13.14 14.35 26.22 22.6 12.05 5.78 11.11 11.62 12.29 27.05 31.69 25.52 7.21 18.91 27.11 37.0 51.53 21.01 12.26 6.52 11.72 12.03 17.98 46.58 17.86 14.03 5.56 12.92 13.45 14.25 36.49 30.41 20.85
+ 9.7 13.83 19.99 14.71 33.2 42.33 18.8 9.65 19.31 16.62 23.67 63.82 25.0 12.9 7.85 12.58 15.69 15.78 29.27 50.19 19.67 9.71 16.65 17.41 27.24 51.67 69.37 64.23 20.35 36.31 ".." 100.0 ".." 100.0 100.0 21.92 48.79 100.0 ".." ".." 12.08 6.96 2.88 5.82 6.5 9.32 13.85 26.78 20.3 7.97
+ 15.85 18.51 30.39 33.46 76.72 22.33 11.75 23.76 26.99 37.32 100.0 30.48 28.58 10.57 18.71 26.21 30.33 45.01 100.0 60.86 19.88 41.17 52.96 100.0 100.0 42.15 41.4 13.3 24.88 35.49 48.09 46.38 100.0 42.92 14.26 37.98 48.5 60.48 87.96 52.34 20.22 9.7 21.71 22.11 34.24 100.0 70.3 37.95 11.1 23.54
+ 28.45 36.51 57.18 41.73 23.64 10.09 18.99 23.64 29.12 39.96 39.12 22.09 8.93 19.13 17.62 20.21 37.78 45.19 34.8 12.85 31.53 34.73 69.94 100.0 29.07 19.4 9.5 18.83 17.57 27.24 49.66 36.68 21.61 8.54 21.56 20.19 31.59 42.01 51.98 40.31 11.66 20.89 32.88 34.31 53.1 61.48 30.9 14.59 34.42 29.54
+ 41.48 71.47 43.31 29.57 11.57 17.86 22.44 33.32 42.08 63.03 25.29 15.45 25.34 34.78 60.39 100.0 ".." 69.16 23.41 51.37 ".." ".." ".." ".." ".." 26.86 75.22 100.0 ".." ".." 8.73 5.18 2.63 4.64 5.49 5.56 14.34 26.3 16.52 7.87 12.49 17.82 16.17 47.67 92.71 22.55 11.33 18.38 33.61 29.9
+ 66.33 20.03 15.25 10.73 17.24 17.94 17.2 58.09 100.0 39.36 24.64 41.65 36.08 36.08 100.0 47.65 22.67 11.43 19.91 21.84 20.9 48.85 51.1 31.98 11.8 24.8 37.34 34.06 58.18 60.47 19.12 8.84 16.25 19.14 27.43 72.18 31.29 27.25 11.17 19.19 35.05 27.38 50.99 24.36 14.55 8.59 15.74 15.76 16.02 34.37
+ 27.67 14.17 7.7 13.45 16.74 15.37 39.34 47.66 35.14 9.73 20.69 48.22 43.29 59.72 27.23 15.77 9.02 16.03 15.2 22.13 94.22 19.77 16.62 7.13 14.58 16.27 15.66 63.46 38.08 24.1 12.39 17.9 22.96 16.56 38.23 59.77 25.74 14.54 23.85 20.48 28.51 100.0 29.72 15.31 10.8 16.15 22.47 18.28 36.62 77.16
+ 31.17 12.47 18.46 22.22 30.75 61.06 69.37 100.0 29.0 51.49 ".." 100.0 ".." 100.0 100.0 27.61 64.02 ".." ".." "..";
