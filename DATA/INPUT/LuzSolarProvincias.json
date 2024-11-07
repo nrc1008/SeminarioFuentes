@@ -1,0 +1,88 @@
+{
+  "Andalucía": {
+    "Almería": {"Horas de sol": 3305, "Hora solar pico": 6.02},
+    "Cádiz": {"Horas de sol": 3316, "Hora solar pico": 6},
+    "Córdoba": {"Horas de sol": 3316, "Hora solar pico": 5.9},
+    "Granada": {"Horas de sol": 3328, "Hora solar pico": 5.93},
+    "Huelva": {"Horas de sol": 3527, "Hora solar pico": 6.02},
+    "Jaén": {"Horas de sol": 3289, "Hora solar pico": 5.82},
+    "Málaga": {"Horas de sol": 3248, "Hora solar pico": 5.82},
+    "Sevilla": {"Horas de sol": 3526, "Hora solar pico": 5.98}
+  },
+  "Aragón": {
+    "Huesca": {"Horas de sol": 3099, "Hora solar pico": 5.67},
+    "Teruel": {"Horas de sol": 3011, "Hora solar pico": 5.11},
+    "Zaragoza": {"Horas de sol": 2620, "Hora solar pico": 5.61}
+  },
+  "Asturias": {
+    "Asturias": {"Horas de sol": 1962, "Hora solar pico": 3.85}
+  },
+  "Cantabria": {
+    "Cantabria": {"Horas de sol": 1639, "Hora solar pico": 3.97}
+  },
+  "Cataluña": {
+    "Barcelona": {"Horas de sol": 2453, "Hora solar pico": 5.4},
+    "Girona": {"Horas de sol": 2800, "Hora solar pico": 4.12},
+    "Lleida": {"Horas de sol": 3031, "Hora solar pico": 5.61},
+    "Tarragona": {"Horas de sol": 2620, "Hora solar pico": 5.59}
+  },
+  "Castilla La-Mancha": {
+    "Albacete": {"Horas de sol": 3282, "Hora solar pico": 5.72},
+    "Ciudad Real": {"Horas de sol": 3295, "Hora solar pico": 5.76},
+    "Cuenca": {"Horas de sol": 2779, "Hora solar pico": 5.57},
+    "Guadalajara": {"Horas de sol": 2900, "Hora solar pico": 5.59},
+    "Toledo": {"Horas de sol": 2815, "Hora solar pico": 5.78}
+  },
+  "Castilla y León": {
+    "Ávila": {"Horas de sol": 3305, "Hora solar pico": 5.27},
+    "Burgos": {"Horas de sol": 2751, "Hora solar pico": 4.98},
+    "León": {"Horas de sol": 2734, "Hora solar pico": 5.31},
+    "Palencia": {"Horas de sol": 2576, "Hora solar pico": 5.11},
+    "Salamanca": {"Horas de sol": 3262, "Hora solar pico": 5.34},
+    "Segovia": {"Horas de sol": 3024, "Hora solar pico": 5.02},
+    "Soria": {"Horas de sol": 2894, "Hora solar pico": 5.1},
+    "Valladolid": {"Horas de sol": 3016, "Hora solar pico": 5.39},
+    "Zamora": {"Horas de sol": 2858, "Hora solar pico": 5.43}
+  },
+  "Madrid": {
+    "Madrid": {"Horas de sol": 2691, "Hora solar pico": 5.74}
+  },
+  "Comunidad Valenciana": {
+    "Alicante": {"Horas de sol": 3397, "Hora solar pico": 5.73},
+    "Castellón": {"Horas de sol": 3321, "Hora solar pico": 5.59},
+    "Valencia": {"Horas de sol": 2808, "Hora solar pico": 5.73}
+  },
+  "Extremadura": {
+    "Badajoz": {"Horas de sol": 3224, "Hora solar pico": 5.74},
+    "Cáceres": {"Horas de sol": 3365, "Hora solar pico": 5.7}
+  },
+  "Galicia": {
+    "A Coruña": {"Horas de sol": 2453, "Hora solar pico": 4.3},
+    "Lugo": {"Horas de sol": 2820, "Hora solar pico": 4.3},
+    "Ourense": {"Horas de sol": 2800, "Hora solar pico": 4.8},
+    "Pontevedra": {"Horas de sol": 3031, "Hora solar pico": 4.4}
+  },
+  "Islas Baleares": {
+    "Mallorca": {"Horas de sol": 3098, "Hora solar pico": 5.3},
+    "Menorca": {"Horas de sol": 2981, "Hora solar pico": 5.3}
+  },
+  "Islas Canarias": {
+    "Tenerife": {"Horas de sol": 3098, "Hora solar pico": 5.3},
+    "Lanzarote": {"Horas de sol": 2924, "Hora solar pico": 5.9},
+    "La Palma": {"Horas de sol": 2800, "Hora solar pico": 5.9}
+  },
+  "La Rioja": {
+    "La Rioja": {"Horas de sol": 2708, "Hora solar pico": 4.54}
+  },
+  "Murcia": {
+    "Murcia": {"Horas de sol": 3348, "Hora solar pico": 5.7}
+  },
+  "Navarra": {
+    "Pamplona": {"Horas de sol": 2285, "Hora solar pico": 4.74}
+  },
+  "País Vasco": {
+    "Álava": {"Horas de sol": 2147, "Hora solar pico": 4.2},
+    "Guipúzcoa": {"Horas de sol": 1906, "Hora solar pico": 3.6},
+    "Vizcaya": {"Horas de sol": 1694, "Hora solar pico": 3.86}
+  }
+}
