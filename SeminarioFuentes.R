@@ -70,18 +70,97 @@ media_horas_sol <- tapply(df_datos_solar$Horas_de_sol, df_datos_solar$Comunidad,
 # Mostrar el resultado
 print(media_horas_sol)
 
+# Renombrar las columnas para que coincidan, ya que en los datos comunidad se llama distinto
+colnames(df_datos_cataratas)[colnames(df_datos_cataratas) == "Comunidad.autónoma"] <- "Comunidad"
+
+names(df_datos_solar)#para comprobar las columnas de los df
+names(df_datos_cataratas)
+
 # Ordenar por horas de sol de mayor a menor
-df_datos_solar_ordenado_horas_sol <- df_datos_solar
+df_datos_solar_ordenado_horas_sol <- df_datos_solar[order(df_datos_solar$Horas_de_sol, decreasing = TRUE), ]
 
 # Ordenar por porcentaje de población con cataratas de mayor a menor
-df_datos_solar_ordenado_cataratas <- df_datos_solar[order(df_datos_solar$Porcentaje_cataratas, decreasing = TRUE), ]
+df_datos_cataratas_ordenado_cataratas <- df_datos_cataratas[order(df_datos_cataratas$value, decreasing = TRUE), ]
 
 # Mostrar los resultados ordenados
 print("Ordenado por Horas de Sol (Mayor a Menor):")
 print(df_datos_solar_ordenado_horas_sol)
 
 print("Ordenado por Porcentaje de Población con Cataratas (Mayor a Menor):")
-print(df_datos_solar_ordenado_cataratas)
+print(df_datos_cataratas_ordenado_cataratas)
+
+#Como las comunidades en cataratas tienen un número alante (1-Andalucía) y además texto atrás, como por ejempo "Comunidad de Madrid" vamos a eliminar todo lo que no coincida con comunidad del otro df para poder juntarlos
+
+df_datos_cataratas_ordenado_cataratas$Comunidad<-gsub("^(.*), La$", "La \\1", df_datos_cataratas_ordenado_cataratas$Comunidad) #Para la rioja
+df_datos_cataratas_ordenado_cataratas$Comunidad<-gsub("^Comunidad de ", "", df_datos_cataratas_ordenado_cataratas$Comunidad)
+df_datos_cataratas_ordenado_cataratas$Comunidad<-gsub("^Región de ", "", df_datos_cataratas_ordenado_cataratas$Comunidad)
+df_datos_cataratas_ordenado_cataratas$Comunidad<-gsub("^Illes ", "", df_datos_cataratas_ordenado_cataratas$Comunidad)
+df_datos_cataratas_ordenado_cataratas$Comunidad<-gsub("^Principado de ", "", df_datos_cataratas_ordenado_cataratas$Comunidad)
+df_datos_cataratas_ordenado_cataratas$Comunidad<-gsub("^Comunidad Foral de ", "", df_datos_cataratas_ordenado_cataratas$Comunidad)
+
+
+# Lista de patrones y sus reemplazos
+patrones <- c("^(Principado de )", "^Comunidad Foral de ", "^Comunidad de ", "^Región de ", "^Illes ", ", La$", "^$") 
+reemplazos <- c("", "", "", "", "", "La ", "") # Limpiar los nombres de comunidades usando gsub 
+for (i in 1:length(patrones)) { 
+  df_datos_cataratas_ordenado_cataratas$Comunidad <- gsub(patrones[i], reemplazos[i], df_datos_cataratas_ordenado_cataratas$Comunidad) 
+} 
+# Ver los resultados 
+head(df_datos_cataratas_ordenado_cataratas$Comunidad)
+
+# Lista de patrones y sus reemplazos
+patrones <- c("^[0-9]+ ", "^(Principado de )", "^Comunidad Foral de ", "^Comunidad de ", "^Región de ", "^Illes ", ", La$", "^$")
+reemplazos <- c("", "", "", "", "", "", "La ", "")
+
+# Limpiar los nombres de comunidades usando gsub
+for (i in 1:length(patrones)) {
+  df_datos_cataratas_ordenado_cataratas$Comunidad<- gsub(patrones[i], reemplazos[i], df_datos_cataratas_ordenado_cataratas$Comunidad)
+}
+
+# Limpiar las comunidades de prefijos no deseados y números
+df_datos_cataratas_ordenado_cataratas$Comunidad<- gsub("^([0-9]+ )", "", df_datos_cataratas_ordenado_cataratas$Comunidad)  # Eliminar números al principio
+df_datos_cataratas_ordenado_cataratas$Comunidad <- gsub("^(Comunidad de |Comunidad Foral de |Región de |Principado de |Illes |, La|, Illes)", "", df_datos_cataratas_ordenado_cataratas$Comunidad)
+
+
+# Verifica cómo se ve un caso específico
+print(gsub("^(Comunidad de |Comunidad Foral de |Región de |Principado de |Illes |, La|, Illes)", "", "Comunidad de Madrid"))
+
+
+# Ver los resultados
+head(df_datos_cataratas_ordenado_cataratas$Comunidad)
+
+#Vamos a unir los datos con su columna en común, comunidad
+
+df_datos_combinados<- left_join(df_datos_solar_ordenado_horas_sol,df_datos_cataratas_ordenado_cataratas,by="Comunidad")
+
+df_datos_combinados<- df_datos_combinados %>%
+  mutate(sol_ordenado_categoria= case_when(
+    Horas_de_sol<2500 ~ "Bajo",
+    Horas_de_sol>= 2500 & Horas_de_sol<3500 ~ "Medio",
+    Horas_de_sol>3500 ~ "Alto"
+  ))
+
+head(df_datos_combinados)
+
+#xplorar cómo varía el porcentaje de cataratas en las diferentes categorías de horas de sol
+df_combinado %>% 
+  group_by(categoria_sol) %>% 
+  summarise(promedio_cataratas = mean(value, na.rm = TRUE))
+
+#multiplicar el porcentaje de cataratas por las horas de sol para ver qué tan impactante es esa relación
+df_combinado <- df_combinado %>% 
+  mutate(impacto = Horas_de_sol * value) # Ver los primeros resultados 
+head(df_combinado)
+
+
+
+
+
+
+
+
+
+
 
 library(ggplot2)
 library(dplyr)
@@ -94,6 +173,7 @@ library(dplyr)
 #as.data.frame() %>%
   #mutate(fecha = as.Date(fecha), # Asegúrate de que la fecha esté en el formato correcto
          #temperatura = as.numeric(temperatura)
+
 
 # Graficamos
 ggplot(data = datos_cataratas, aes(x = reorder(enfermedad,-valor), y = valor, fill=enfermedad)) +
