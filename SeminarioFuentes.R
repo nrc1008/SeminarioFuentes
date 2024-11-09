@@ -77,7 +77,37 @@ names(df_datos_solar)#para comprobar las columnas de los df
 names(df_datos_cataratas)
 
 # Ordenar por horas de sol de mayor a menor
+
 df_datos_solar_ordenado_horas_sol <- df_datos_solar[order(df_datos_solar$Horas_de_sol, decreasing = TRUE), ]
+
+media_horas_sol_ordenada <- sort(media_horas_sol, decreasing = TRUE)
+
+print(media_horas_sol_ordenada)
+
+#Ordenar cataratas de mayor a menor
+# Filtrar el dataframe para obtener solo los datos de "Ambos sexos"
+df_cataratas_ambos <- subset(df_cataratas, Sexo == "Ambos sexos")
+
+# Ordenar de mayor a menor en base a la columna 'value' (porcentaje de cataratas)
+df_cataratas_ordenado <- df_cataratas_ambos[order(-df_cataratas_ambos$value), ]
+
+# Seleccionar solo las columnas de Comunidad.autónoma y value, y mostrar el resultado
+print(df_cataratas_ordenado[, c("Comunidad.autónoma", "value")])
+
+#Ahora ordenamos solo los datos de hombres
+df_cataratas_hombres <- subset(df_cataratas, Sexo == "Hombres")
+df_cataratas_ordenadohombres <- df_cataratas_hombres[order(-df_cataratas_hombres$value), ]
+print(df_cataratas_ordenadohombres[, c("Comunidad.autónoma", "value")])
+
+#Repetimos el proceso con las mujeres
+df_cataratas_mujeres <- subset(df_cataratas, Sexo == "Mujeres")
+df_cataratas_ordenadomujeres <- df_cataratas_mujeres[order(-df_cataratas_mujeres$value), ]
+print(df_cataratas_ordenadomujeres[, c("Comunidad.autónoma", "value")])
+
+
+
+
+
 
 # Ordenar por porcentaje de población con cataratas de mayor a menor
 df_datos_cataratas_ordenado_cataratas <- df_datos_cataratas[order(df_datos_cataratas$value, decreasing = TRUE), ]
