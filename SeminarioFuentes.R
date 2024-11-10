@@ -94,6 +94,8 @@ media_horas_sol_ordenada <- sort(media_horas_sol, decreasing = TRUE)
 
 print(media_horas_sol_ordenada)
 
+
+
 #Ordenar cataratas de mayor a menor
 # Filtrar el dataframe para obtener solo los datos de "Ambos sexos"
 df_cataratas_ambos <- subset(df_cataratas, Sexo == "Ambos sexos")
@@ -101,15 +103,110 @@ df_cataratas_ambos <- subset(df_cataratas, Sexo == "Ambos sexos")
 # Seleccionar solo las columnas de Comunidad y value, y mostrar el resultado
 print(df_datos_cataratas_ordenado_cataratas[, c("Comunidad", "value")])
 
+
+#Como nos salen los valores repetidos, aplicamos distinct
+df_unicos <- distinct(df_datos_cataratas_ordenado_cataratas[, c("Comunidad", "value")])
+
+# Mostrar el resultado
+print(df_unicos)
+
+
 #Ahora ordenamos solo los datos de hombres
 df_cataratas_hombres <- subset(df_cataratas, Sexo == "Hombres")
 df_cataratas_ordenadohombres <- df_cataratas_hombres[order(-df_cataratas_hombres$value), ]
-print(df_cataratas_ordenadohombres[, c("Comunidad", "value")])
+print(df_cataratas_ordenadohombres[, c("Comunidad.autonoma", "value")])
 
 #Repetimos el proceso con las mujeres
 df_cataratas_mujeres <- subset(df_cataratas, Sexo == "Mujeres")
 df_cataratas_ordenadomujeres <- df_cataratas_mujeres[order(-df_cataratas_mujeres$value), ]
 print(df_cataratas_ordenadomujeres[, c("Comunidad.autónoma", "value")])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Creamos una lista de correcciones para los nombres de las comunidades
+nombres_correcciones <- c(
+  "Andalucía" = "Andalucía",
+  "Murcia, Región de" = "Murcia",
+  "Navarra, Comunidad Foral de" = "Navarra",
+  "Balears, Illes" = "Islas Baleares",
+  "Canarias" = "Islas Canarias",
+  "Castilla - La Mancha" = "Castilla La-Mancha",
+  "Castilla y León" = "Castilla y León",
+  "Cataluña" = "Cataluña",
+  "Comunitat Valenciana" = "Comunidad Valenciana",
+  "País Vasco" = "País Vasco",
+  "Aragón" = "Aragón",
+  "Asturias, Principado de" = "Asturias",
+  "Galicia" = "Galicia",
+  "Madrid, Comunidad de" = "Madrid",
+  "Cantabria" = "Cantabria",
+  "La Rioja" = "La Rioja",
+  "Extremadura" = "Extremadura",
+  "Ceuta" = "Ceuta",
+  "Melilla" = "Melilla"
+)
+
+# Aplicamos la lista de correcciones en la tabla de cataratas
+df_cataratas_mujeres$Comunidad.autónoma <- nombres_correcciones[df_cataratas_mujeres$Comunidad.autónoma]
+
+# Crear un data frame para horas de sol
+df_horas_sol <- data.frame(
+  Comunidad.autónoma = names(media_horas_sol_ordenada),
+  Horas_Sol = as.vector(media_horas_sol_ordenada)
+)
+
+
+
+# Realizamos el left join entre las dos tablas usando la columna "Comunidad.autónoma" como atributo común
+df_ambas_tablas <- df_cataratas_ordenadomujeres %>%
+  left_join(df_horas_sol, by = "Comunidad.autónoma")
+
+# Ver la tabla combinada
+print(df_ambas_tablas)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -152,6 +249,18 @@ print(gsub("^(Comunidad de |Comunidad Foral de |Región de |Principado de |Illes
 
 # Ver los resultados
 head(df_datos_cataratas_ordenado_cataratas$Comunidad)
+
+
+
+
+
+
+
+
+
+
+
+
 
 #Vamos a unir los datos con su columna en común, comunidad
 
