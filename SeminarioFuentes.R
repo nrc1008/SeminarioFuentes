@@ -32,12 +32,12 @@ str(df_datos_solar)
 
 
 #De las distintas enfermedades de nuestros datos, seleccionamos las de interés, que son las cataratas
-df_cataratas <- df_datos_cataratas %>%
+df_solo_cataratas <- df_datos_cataratas %>%
   filter(Enfermedades == "Cataratas")
 
 # Ver los primeros registros filtrados
-head(df_cataratas)
-print(df_cataratas)
+head(df_solo_cataratas)
+print(df_solo_cataratas)
 
 #
 # Datos iniciales en formato data.frame
@@ -71,17 +71,17 @@ media_horas_sol <- tapply(df_datos_solar$Horas_de_sol, df_datos_solar$Comunidad,
 print(media_horas_sol)
 
 # Renombrar las columnas para que coincidan, ya que en los datos comunidad se llama distinto
-colnames(df_datos_cataratas)[colnames(df_datos_cataratas) == "Comunidad.autónoma"] <- "Comunidad"
+colnames(df_solo_cataratas)[colnames(df_solo_cataratas) == "Comunidad.autónoma"] <- "Comunidad"
 
 names(df_datos_solar)#para comprobar las columnas de los df
-names(df_datos_cataratas)
+names(df_solo_cataratas)
 
 # Ordenar por horas de sol de mayor a menor
 
 df_datos_solar_ordenado_horas_sol <- df_datos_solar[order(df_datos_solar$Horas_de_sol, decreasing = TRUE), ]
 
 # Ordenar por porcentaje de población con cataratas de mayor a menor en base a la columna 'value' (porcentaje de cataratas)
-df_datos_cataratas_ordenado_cataratas <- df_datos_cataratas[order(df_datos_cataratas$value, decreasing = TRUE), ]
+df_datos_cataratas_ordenado_cataratas <- df_solo_cataratas[order(df_solo_cataratas$value, decreasing = TRUE), ]
 
 # Mostrar los resultados ordenados
 print("Ordenado por Horas de Sol (Mayor a Menor):")
@@ -94,15 +94,12 @@ media_horas_sol_ordenada <- sort(media_horas_sol, decreasing = TRUE)
 
 print(media_horas_sol_ordenada)
 
-
-
 #Ordenar cataratas de mayor a menor
 # Filtrar el dataframe para obtener solo los datos de "Ambos sexos"
-df_cataratas_ambos <- subset(df_cataratas, Sexo == "Ambos sexos")
+df_cataratas_ambos <- subset(df_datos_cataratas_ordenado_cataratas, Sexo == "Ambos sexos")
 
 # Seleccionar solo las columnas de Comunidad y value, y mostrar el resultado
-print(df_datos_cataratas_ordenado_cataratas[, c("Comunidad", "value")])
-
+print(df_datos_cataratas_ordenado_cataratas[, c("Comunidad", "value","Sexo")])
 
 #Como nos salen los valores repetidos, aplicamos distinct
 df_unicos <- distinct(df_datos_cataratas_ordenado_cataratas[, c("Comunidad", "value")])
@@ -110,33 +107,22 @@ df_unicos <- distinct(df_datos_cataratas_ordenado_cataratas[, c("Comunidad", "va
 # Mostrar el resultado
 print(df_unicos)
 
-
 #Ahora ordenamos solo los datos de hombres
-df_cataratas_hombres <- subset(df_cataratas, Sexo == "Hombres")
-df_cataratas_ordenadohombres <- df_cataratas_hombres[order(-df_cataratas_hombres$value), ]
-print(df_cataratas_ordenadohombres[, c("Comunidad.autonoma", "value")])
+df_cataratas_hombres <- subset(df_datos_cataratas_ordenado_cataratas, Sexo == "Hombres")
+   #df_cataratas_ordenadohombres <- df_cataratas_hombres[order(-df_cataratas_hombres$value), ]
+print(df_cataratas_hombres[, c("Comunidad", "value","Sexo")])
 
 #Repetimos el proceso con las mujeres
-df_cataratas_mujeres <- subset(df_cataratas, Sexo == "Mujeres")
-df_cataratas_ordenadomujeres <- df_cataratas_mujeres[order(-df_cataratas_mujeres$value), ]
-print(df_cataratas_ordenadomujeres[, c("Comunidad.autónoma", "value")])
+df_cataratas_mujeres <- subset(df_datos_cataratas_ordenado_cataratas, Sexo == "Mujeres")
+    #df_cataratas_ordenadomujeres <- df_cataratas_mujeres[order(-df_cataratas_mujeres$value), ]
+print(df_cataratas_mujeres[, c("Comunidad", "value","Sexo")])
+
+df_cataratas_ambos <- subset(df_datos_cataratas_ordenado_cataratas, Sexo == "Ambos sexos")
+print(df_cataratas_ambos[, c("Comunidad", "value","Sexo")])
 
 
+#Como las comunidades en cataratas tienen un número alante (1-Andalucía) y además texto atrás, como por ejempo "Comunidad de Madrid" vamos a eliminar todo lo que no coincida con comunidad del otro df para poder juntarlos
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Creamos una lista de correcciones para los nombres de las comunidades
 nombres_correcciones <- c(
   "Andalucía" = "Andalucía",
   "Murcia, Región de" = "Murcia",
@@ -160,103 +146,25 @@ nombres_correcciones <- c(
 )
 
 # Aplicamos la lista de correcciones en la tabla de cataratas
-df_cataratas_mujeres$Comunidad.autónoma <- nombres_correcciones[df_cataratas_mujeres$Comunidad.autónoma]
+df_cataratas_mujeres$Comunidad <- nombres_correcciones[df_cataratas_mujeres$Comunidad]
+
+df_cataratas_mujeres_corregido<-nombres_correcciones[df_cataratas_mujeres$Comunidad]
+df_cataratas_mujeres_corregido
 
 # Crear un data frame para horas de sol
 df_horas_sol <- data.frame(
-  Comunidad.autónoma = names(media_horas_sol_ordenada),
+  Comunidad = names(media_horas_sol_ordenada),
   Horas_Sol = as.vector(media_horas_sol_ordenada)
 )
 
-
+df_horas_sol
 
 # Realizamos el left join entre las dos tablas usando la columna "Comunidad.autónoma" como atributo común
-df_ambas_tablas <- df_cataratas_ordenadomujeres %>%
-  left_join(df_horas_sol, by = "Comunidad.autónoma")
+df_ambas_tablas <- df_cataratas_mujeres %>%
+  left_join(df_horas_sol, by = "Comunidad")
 
 # Ver la tabla combinada
 print(df_ambas_tablas)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#Como las comunidades en cataratas tienen un número alante (1-Andalucía) y además texto atrás, como por ejempo "Comunidad de Madrid" vamos a eliminar todo lo que no coincida con comunidad del otro df para poder juntarlos
-
-df_datos_cataratas_ordenado_cataratas$Comunidad<-gsub("^(.*), La$", "La \\1", df_datos_cataratas_ordenado_cataratas$Comunidad) #Para la rioja
-df_datos_cataratas_ordenado_cataratas$Comunidad<-gsub("^Comunidad de ", "", df_datos_cataratas_ordenado_cataratas$Comunidad)
-df_datos_cataratas_ordenado_cataratas$Comunidad<-gsub("^Región de ", "", df_datos_cataratas_ordenado_cataratas$Comunidad)
-df_datos_cataratas_ordenado_cataratas$Comunidad<-gsub("^Illes ", "", df_datos_cataratas_ordenado_cataratas$Comunidad)
-df_datos_cataratas_ordenado_cataratas$Comunidad<-gsub("^Principado de ", "", df_datos_cataratas_ordenado_cataratas$Comunidad)
-df_datos_cataratas_ordenado_cataratas$Comunidad<-gsub("^Comunidad Foral de ", "", df_datos_cataratas_ordenado_cataratas$Comunidad)
-
-
-# Lista de patrones y sus reemplazos
-patrones <- c("^(Principado de )", "^Comunidad Foral de ", "^Comunidad de ", "^Región de ", "^Illes ", ", La$", "^$") 
-reemplazos <- c("", "", "", "", "", "La ", "") # Limpiar los nombres de comunidades usando gsub 
-for (i in 1:length(patrones)) { 
-  df_datos_cataratas_ordenado_cataratas$Comunidad <- gsub(patrones[i], reemplazos[i], df_datos_cataratas_ordenado_cataratas$Comunidad) 
-} 
-# Ver los resultados 
-head(df_datos_cataratas_ordenado_cataratas$Comunidad)
-
-# Lista de patrones y sus reemplazos
-patrones <- c("^[0-9]+ ", "^(Principado de )", "^Comunidad Foral de ", "^Comunidad de ", "^Región de ", "^Illes ", ", La$", "^$")
-reemplazos <- c("", "", "", "", "", "", "La ", "")
-
-# Limpiar los nombres de comunidades usando gsub
-for (i in 1:length(patrones)) {
-  df_datos_cataratas_ordenado_cataratas$Comunidad<- gsub(patrones[i], reemplazos[i], df_datos_cataratas_ordenado_cataratas$Comunidad)
-}
-
-# Limpiar las comunidades de prefijos no deseados y números
-df_datos_cataratas_ordenado_cataratas$Comunidad<- gsub("^([0-9]+ )", "", df_datos_cataratas_ordenado_cataratas$Comunidad)  # Eliminar números al principio
-df_datos_cataratas_ordenado_cataratas$Comunidad <- gsub("^(Comunidad de |Comunidad Foral de |Región de |Principado de |Illes |, La|, Illes)", "", df_datos_cataratas_ordenado_cataratas$Comunidad)
-
-
-# Verifica cómo se ve un caso específico
-print(gsub("^(Comunidad de |Comunidad Foral de |Región de |Principado de |Illes |, La|, Illes)", "", "Comunidad de Madrid"))
-
-
-# Ver los resultados
-head(df_datos_cataratas_ordenado_cataratas$Comunidad)
-
-
-
-
-
-
-
-
 
 
 
