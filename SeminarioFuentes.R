@@ -70,6 +70,9 @@ media_horas_sol <- tapply(df_datos_solar$Horas_de_sol, df_datos_solar$Comunidad,
 # Mostrar el resultado
 print(media_horas_sol)
 
+
+
+
 # Renombrar las columnas para que coincidan, ya que en los datos comunidad se llama distinto
 colnames(df_solo_cataratas)[colnames(df_solo_cataratas) == "Comunidad.autónoma"] <- "Comunidad"
 
@@ -145,11 +148,6 @@ nombres_correcciones <- c(
   "Melilla" = "Melilla"
 )
 
-# Aplicamos la lista de correcciones en la tabla de cataratas
-df_cataratas_mujeres$Comunidad <- nombres_correcciones[df_cataratas_mujeres$Comunidad]
-
-df_cataratas_mujeres_corregido<-nombres_correcciones[df_cataratas_mujeres$Comunidad]
-df_cataratas_mujeres_corregido
 
 # Crear un data frame para horas de sol
 df_horas_sol <- data.frame(
@@ -159,12 +157,55 @@ df_horas_sol <- data.frame(
 
 df_horas_sol
 
+#Empezamos analizando la relacion con solo el sexo femenino
+# Aplicamos la lista de correcciones en la tabla de cataratas
+df_cataratas_mujeres$Comunidad <- nombres_correcciones[df_cataratas_mujeres$Comunidad]
+
+df_cataratas_mujeres_corregido<-nombres_correcciones[df_cataratas_mujeres$Comunidad]
+df_cataratas_mujeres_corregido
+
+
+
 # Realizamos el left join entre las dos tablas usando la columna "Comunidad.autónoma" como atributo común
-df_ambas_tablas <- df_cataratas_mujeres %>%
+df_mujeres <- df_cataratas_mujeres %>%
   left_join(df_horas_sol, by = "Comunidad")
 
 # Ver la tabla combinada
-print(df_ambas_tablas)
+print(df_mujeres)
+
+
+#Seguimos con el genero masculino
+# Aplicamos la lista de correcciones en la tabla de cataratas
+df_cataratas_hombres$Comunidad <- nombres_correcciones[df_cataratas_hombres$Comunidad]
+
+df_cataratas_hombres_corregido<-nombres_correcciones[df_cataratas_hombres$Comunidad]
+df_cataratas_hombres_corregido
+
+# Realizamos el left join entre las dos tablas usando la columna "Comunidad.autónoma" como atributo común
+df_hombres <- df_cataratas_hombres %>%
+  left_join(df_horas_sol, by = "Comunidad")
+
+# Ver la tabla combinada
+print(df_hombres)
+
+
+#Por ultimo hacemos un analisis de ambos sexos:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -203,8 +244,6 @@ head(df_combinado)
 
 
 
-library(ggplot2)
-library(dplyr)
 
 #cataratas_df <- datos_cataratas %>%
 #unnest_wider(Data) %>% 
@@ -217,21 +256,41 @@ library(dplyr)
 
 
 # Graficamos
-ggplot(data = datos_cataratas, aes(x = reorder(enfermedad,-valor), y = valor, fill=enfermedad)) +
-  geom_bar(stat = "identity")+
-  labs(x = "", y = "Valor (%)", title = "Distribución incidencia cataratas en España") +
-  scale_fill_gradient(palette = "Set1") +
-  theme_minimal()+
+
+library(ggplot2)
+library(dplyr)
+
+#Empezamos por el grafico de cataratas-horas de sol en las comunidades, solo para mujeres:
+ggplot(data = df_mujeres, aes(x = reorder(Comunidad, -value), y = value, fill = Comunidad)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Comunidad Autónoma", y = "Valor (%)")
+  scale_fill_brewer(palette = "Set1") +  
+  theme_minimal() +
   theme(axis.text.x = element_text(angle = 60, vjust = 1, hjust = 1))
 
-ggplot(data = datos_cataratas, aes(x = fecha, y = temperatura, color=humedad)) +
+
+ggplot(data = df_mujeres, aes(x = Comunidad, y = value, color = Horas_Sol,)) +
   geom_line() +
-  labs(x = "Fecha", y = "Temperatura (ºC)", title = "Temperatura a lo largo de tiempo") +
-  scale_color_gradient(low = "blue", high = "red", name="Humedad (%)") +
-  theme_classic()
+  labs(x = "Comunidad Autónoma", y = "Incidencia de Cataratas (%)", 
+       title = "Incidencia de Cataratas en Mujeres según Comunidad Autónoma", 
+       color = "Horas de Sol") +
+  scale_color_gradient(low = "blue", high = "red") +
+  theme_classic() 
+
+#Graficos Cataratas-Hombres:
+ggplot(data = df_hombres, aes(x = reorder(Comunidad, -value), y = value, fill = Comunidad)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Comunidad Autónoma", y = "Valor (%)", title = "Distribución de la Incidencia de Cataratas en Hombres en España") +
+  scale_fill_brewer(palette = "Set1") +  
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 60, vjust = 1, hjust = 1))
 
 
-
-
-
+ggplot(data = df_hombres, aes(x = Comunidad, y = value, color = Horas_Sol, )) +
+  geom_line() +
+  labs(x = "Comunidad Autónoma", y = "Incidencia de Cataratas (%)", 
+       title = "Incidencia de Cataratas en Hombres según Comunidad Autónoma", 
+       color = "Horas de Sol") +
+  scale_color_gradient(low = "blue", high = "red") +
+  theme_classic() 
 
