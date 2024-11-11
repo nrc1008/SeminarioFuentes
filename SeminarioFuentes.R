@@ -190,7 +190,17 @@ print(df_hombres)
 
 
 #Por ultimo hacemos un analisis de ambos sexos:
+df_cataratas_ambos$Comunidad <- nombres_correcciones[df_cataratas_ambos$Comunidad]
 
+df_cataratas_ambos_corregido<-nombres_correcciones[df_cataratas_ambos$Comunidad]
+df_cataratas_ambos_corregido
+
+# Realizamos el left join entre las dos tablas usando la columna "Comunidad.autónoma" como atributo común
+df_ambos <- df_cataratas_ambos %>%
+  left_join(df_horas_sol, by = "Comunidad")
+
+# Ver la tabla combinada
+print(df_ambos)
 
 
 
@@ -224,7 +234,7 @@ df_datos_combinados<- df_datos_combinados %>%
 
 head(df_datos_combinados)
 
-#xplorar cómo varía el porcentaje de cataratas en las diferentes categorías de horas de sol
+#Explorar cómo varía el porcentaje de cataratas en las diferentes categorías de horas de sol
 df_combinado %>% 
   group_by(categoria_sol) %>% 
   summarise(promedio_cataratas = mean(value, na.rm = TRUE))
