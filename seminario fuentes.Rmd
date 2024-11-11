@@ -224,19 +224,6 @@ df_ambos <- df_cataratas_ambos %>%
 # Ver la tabla combinada
 print(df_ambos)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 #Vamos a unir los datos con su columna en común, comunidad
 
 df_datos_combinados<- left_join(df_datos_solar_ordenado_horas_sol,df_datos_cataratas_ordenado_cataratas,by="Comunidad")
@@ -259,17 +246,6 @@ df_combinado %>%
 df_combinado <- df_combinado %>% 
   mutate(impacto = Horas_de_sol * value) # Ver los primeros resultados 
 head(df_combinado)
-
-
-
-
-
-
-
-
-
-
-
 
 #cataratas_df <- datos_cataratas %>%
 #unnest_wider(Data) %>% 
