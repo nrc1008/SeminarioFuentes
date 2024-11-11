@@ -73,59 +73,53 @@ print(media_horas_sol)
 
 
 
-# Renombrar las columnas para que coincidan, ya que en los datos comunidad se llama distinto
-colnames(df_solo_cataratas)[colnames(df_solo_cataratas) == "Comunidad.autónoma"] <- "Comunidad"
 
-names(df_datos_solar)#para comprobar las columnas de los df
-names(df_solo_cataratas)
 
 # Ordenar por horas de sol de mayor a menor
-
-df_datos_solar_ordenado_horas_sol <- df_datos_solar[order(df_datos_solar$Horas_de_sol, decreasing = TRUE), ]
-
-# Ordenar por porcentaje de población con cataratas de mayor a menor en base a la columna 'value' (porcentaje de cataratas)
-df_datos_cataratas_ordenado_cataratas <- df_solo_cataratas[order(df_solo_cataratas$value, decreasing = TRUE), ]
-
-# Mostrar los resultados ordenados
-print("Ordenado por Horas de Sol (Mayor a Menor):")
-print(df_datos_solar_ordenado_horas_sol)
-
-print("Ordenado por Porcentaje de Población con Cataratas (Mayor a Menor):")
-print(df_datos_cataratas_ordenado_cataratas)
-
 media_horas_sol_ordenada <- sort(media_horas_sol, decreasing = TRUE)
 
+#Mostrar los resultados ordenados
+print("Ordenado por Horas de Sol (Mayor a Menor):")
 print(media_horas_sol_ordenada)
+
+# Ordenar por porcentaje de población con cataratas de mayor a menor en base a la columna 'value' (porcentaje de cataratas)
+df_cataratas_ordenado <- df_solo_cataratas[order(df_solo_cataratas$value, decreasing = TRUE), ]
+
+# Mostrar los resultados ordenados
+print("Ordenado por Porcentaje de Población con Cataratas (Mayor a Menor):")
+print(df_cataratas_ordenado)
+
+
+
+
+
 
 #Ordenar cataratas de mayor a menor
 # Filtrar el dataframe para obtener solo los datos de "Ambos sexos"
-df_cataratas_ambos <- subset(df_datos_cataratas_ordenado_cataratas, Sexo == "Ambos sexos")
+df_cataratas_ambos <- subset(df_cataratas_ordenado, Sexo == "Ambos sexos")
 
 # Seleccionar solo las columnas de Comunidad y value, y mostrar el resultado
-print(df_datos_cataratas_ordenado_cataratas[, c("Comunidad", "value","Sexo")])
+print(df_cataratas_ambos[, c("Comunidad", "value","Sexo")])
 
 #Como nos salen los valores repetidos, aplicamos distinct
-df_unicos <- distinct(df_datos_cataratas_ordenado_cataratas[, c("Comunidad", "value")])
+df_unicos <- distinct(df_cataratas_ordenado[, c("Comunidad", "value")])
 
 # Mostrar el resultado
 print(df_unicos)
 
 #Ahora ordenamos solo los datos de hombres
-df_cataratas_hombres <- subset(df_datos_cataratas_ordenado_cataratas, Sexo == "Hombres")
+df_cataratas_hombres <- subset(df_cataratas_ordenado, Sexo == "Hombres")
    #df_cataratas_ordenadohombres <- df_cataratas_hombres[order(-df_cataratas_hombres$value), ]
 print(df_cataratas_hombres[, c("Comunidad", "value","Sexo")])
 
 #Repetimos el proceso con las mujeres
-df_cataratas_mujeres <- subset(df_datos_cataratas_ordenado_cataratas, Sexo == "Mujeres")
+df_cataratas_mujeres <- subset(df_cataratas_ordenado, Sexo == "Mujeres")
     #df_cataratas_ordenadomujeres <- df_cataratas_mujeres[order(-df_cataratas_mujeres$value), ]
 print(df_cataratas_mujeres[, c("Comunidad", "value","Sexo")])
 
-df_cataratas_ambos <- subset(df_datos_cataratas_ordenado_cataratas, Sexo == "Ambos sexos")
-print(df_cataratas_ambos[, c("Comunidad", "value","Sexo")])
-
 
 #Como las comunidades en cataratas tienen un número alante (1-Andalucía) y además texto atrás, como por ejempo "Comunidad de Madrid" vamos a eliminar todo lo que no coincida con comunidad del otro df para poder juntarlos
-
+#Establecer niveles: un nivel para cada comunidad autónoma.
 nombres_correcciones <- c(
   "Andalucía" = "Andalucía",
   "Murcia, Región de" = "Murcia",
@@ -164,11 +158,13 @@ df_cataratas_mujeres$Comunidad <- nombres_correcciones[df_cataratas_mujeres$Comu
 df_cataratas_mujeres_corregido<-nombres_correcciones[df_cataratas_mujeres$Comunidad]
 df_cataratas_mujeres_corregido
 
-
+#Observamos los nombres de las columnas de ambas tablas y vemos que la columna correspondiente a la comunidad autónoma tiene distintos nombres
+names(df_datos_solar)#para comprobar las columnas de los df
+names(df_solo_cataratas)
 
 # Realizamos el left join entre las dos tablas usando la columna "Comunidad.autónoma" como atributo común
 df_mujeres <- df_cataratas_mujeres %>%
-  left_join(df_horas_sol, by = "Comunidad")
+  left_join(df_horas_sol, by = c("Comunidad"="Comunidad.autónoma")) #Realizamos un join sin necesidad de cambiar el nombre del atributo en una de las tablas
 
 # Ver la tabla combinada
 print(df_mujeres)
@@ -183,7 +179,7 @@ df_cataratas_hombres_corregido
 
 # Realizamos el left join entre las dos tablas usando la columna "Comunidad.autónoma" como atributo común
 df_hombres <- df_cataratas_hombres %>%
-  left_join(df_horas_sol, by = "Comunidad")
+  left_join(df_horas_sol, by = c("Comunidad"="Comunidad.autónoma"))
 
 # Ver la tabla combinada
 print(df_hombres)
@@ -197,16 +193,10 @@ df_cataratas_ambos_corregido
 
 # Realizamos el left join entre las dos tablas usando la columna "Comunidad.autónoma" como atributo común
 df_ambos <- df_cataratas_ambos %>%
-  left_join(df_horas_sol, by = "Comunidad")
+  left_join(df_horas_sol, by = c("Comunidad"="Comunidad.autónoma"))
 
 # Ver la tabla combinada
 print(df_ambos)
-
-
-
-
-
-
 
 
 
