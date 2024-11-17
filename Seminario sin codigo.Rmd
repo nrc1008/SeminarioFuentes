@@ -1,0 +1,226 @@
+---
+title: "Relación entre la exposición a la luz solar y el desarrollo de cataratas"
+subtitle: "Fuentes de datos biomédicas y web semántica"
+author: "Niamey Rey, María Gómez, Claudia Tundidor"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r}
+knitr::opts_chunk$set(echo = TRUE) 
+```
+
+# **Introducción**
+En este seminario se va a tratar la posible relación entre la exposición a la luz solar con el desarrollo de cataratas, una enfermedad que causa la opacidad parcial o total del cristalino. Esta enfermedad es comunmente asociada a la edad, pero trataremos su posible relación con la luz solar.
+
+
+## **Objetivos**
+Determinar la relación entre la exposición a la luz solar y el desarrollo de cataratas, evaluando como la radiación solar influye en la incidencia de esta enfermedad ocular
+
+### **Objetivos específicos**
+Nos centraremos en unos objetivos específicos:
+
+1. ¿Cuál es la distribución geográfica y temporal de la incidencia de cataratas en la población de estudio?
+2. ¿Qué niveles de exposición a la luz solar se registran en las distintas regiones y cómo varían a lo largo del tiempo?
+3. ¿Existe una correlación estadísticamente significativa entre los niveles de exposición a la luz solar y la incidencia de cataratas?
+
+# **Materiales y métodos**
+```{r}
+#install.packages("jsonlite")
+#install.packages("pxR")
+
+
+library(ggplot2)
+library(jsonlite)
+library(dplyr)
+library(pxR)
+```
+
+## **Estudios relacionados**
+La relación entre la aparición de cataratas y la exposición a la luz solar ha sido objeto de estudio durante muchos años, y la evidencia científica sugiere que sí existe una relación.
+
+Algunos que hemos encontrado:
+ Primero, este [estudio](https://www.nei.nih.gov/about/news-and-events/news/unas-nuevas-investigaciones-exploran-como-los-rayos-uv-contribuyen-las-cataratas)
+ 
+ También , de la clínica oftolmatológica de Londres, este [estudio](https://www.eyecliniclondon.com/blog/sun-cause-cataracts/)
+ 
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+
+
+```{r}
+#Importamos los datos con cada formato correspondiente
+
+datos_cataratas<-read.px("DATA/INPUT/datos_cataratas.px")
+datos_solar<-fromJSON("DATA/INPUT/LuzSolarProvincias.json")
+```
+
+
+
+```{r}
+#Los transformamos a data frame y comprobamos algunas de sus filas
+df_datos_solar<-as.data.frame(datos_solar)
+df_datos_cataratas<-as.data.frame(datos_cataratas)
+
+summary(df_datos_cataratas)
+```
+
+
+```{r}
+summary(df_datos_solar)
+```
+
+
+```{r}
+str(df_datos_cataratas)
+```
+
+
+```{r}
+str(df_datos_solar)
+```
+
+
+```{r}
+```
+
+
+```{r}
+#De las distintas enfermedades de nuestros datos, seleccionamos las de interés, que son las cataratas
+df_solo_cataratas <- df_datos_cataratas %>%
+  filter(Enfermedades == "Cataratas")
+
+# Ver los primeros registros filtrados
+head(df_solo_cataratas)
+```
+
+
+```{r}
+```
+
+
+```{r}
+print(df_solo_cataratas)
+```
+
+
+```{r}
+```
+
+
+```{r}
+#
+# Datos iniciales en formato data.frame
+df_datos_solar <- data.frame(
+  Comunidad = c('Andalucía', 'Andalucía', 'Andalucía', 'Andalucía', 'Andalucía', 'Andalucía', 'Andalucía', 'Andalucía', 
+                'Aragón', 'Aragón', 'Aragón', 'Asturias', 'Cantabria', 'Cataluña', 'Cataluña', 'Cataluña', 'Cataluña',
+                'Castilla La-Mancha', 'Castilla La-Mancha', 'Castilla La-Mancha', 'Castilla La-Mancha', 'Castilla La-Mancha', 
+                'Castilla y León', 'Castilla y León', 'Castilla y León', 
+                'Castilla y León', 'Castilla y León', 'Castilla y León', 'Castilla y León', 'Castilla y León', 'Castilla y León',
+                'Madrid', 'Comunidad Valenciana', 'Comunidad Valenciana', 'Comunidad Valenciana', 'Extremadura', 'Extremadura',
+                'Galicia', 'Galicia', 'Galicia', 'Galicia', 'Islas Baleares', 'Islas Baleares', 'Islas Canarias', 'Islas Canarias', 
+                'Islas Canarias', 'La Rioja', 'Murcia', 'Navarra', 'País Vasco', 'País Vasco', 'País Vasco'),
+  Provincia = c('Almería', 'Cádiz', 'Córdoba', 'Granada', 'Huelva', 'Jaén', 'Málaga', 'Sevilla',
+                'Huesca', 'Teruel', 'Zaragoza', 'Asturias', 'Cantabria', 'Barcelona', 'Girona', 'Lleida', 'Tarragona',
+                'Albacete', 'Ciudad Real', 'Cuenca', 'Guadalajara', 'Toledo', 'Ávila', 'Burgos', 'León', 'Palencia',
+                'Salamanca', 'Segovia', 'Soria', 'Valladolid', 'Zamora', 'Madrid', 'Alicante', 'Castellón', 'Valencia',
+                'Badajoz', 'Cáceres', 'A Coruña', 'Lugo', 'Ourense', 'Pontevedra', 'Mallorca', 'Menorca', 'Tenerife',
+                'Lanzarote', 'La Palma', 'La Rioja', 'Murcia', 'Pamplona', 'Álava', 'Guipúzcoa', 'Vizcaya'),
+  Horas_de_sol = c(3305, 3316, 3316, 3328, 3527, 3289, 3248, 3526, 3099, 3011, 2620, 1962, 1639, 2453, 2800, 3031, 2620,
+                   3282, 3295, 2779, 2900, 2815, 3305, 2751, 2734, 2576, 3262, 3024, 2894, 3016, 2858, 2691, 3397, 3321,
+                   2808, 3224, 3365, 2453, 2820, 2800, 3031, 3098, 2981, 3098, 2924, 2800, 2708, 3348, 2285, 2147, 1906, 1694),
+  Hora_solar_pico = c(6.02, 6, 5.9, 5.93, 6.02, 5.82, 5.82, 5.98, 5.67, 5.11, 5.61, 3.85, 3.97, 5.4, 4.12, 5.61, 5.59, 
+                      5.72, 5.76, 5.57, 5.59, 5.78, 5.27, 4.98, 5.31, 5.11, 5.34, 5.02, 5.1, 5.39, 5.43, 5.74, 5.73, 5.59, 
+                      5.73, 5.74, 5.7, 4.3, 4.3, 4.8, 4.4, 5.3, 5.3, 5.3, 5.9, 5.9, 4.54, 5.7, 4.74, 4.2, 3.6, 3.86)
+)
+
+# Calcular la media de Horas de Sol por Comunidad
+media_horas_sol <- tapply(df_datos_solar$Horas_de_sol, df_datos_solar$Comunidad, mean)
+
+# Mostrar el resultado
+print(media_horas_sol)
+```
+
+
+```{r}
+```
+
+
+```{r}
+# Ordenar por horas de sol de mayor a menor
+media_horas_sol_ordenada <- sort(media_horas_sol, decreasing = TRUE)
+
+#Mostrar los resultados ordenados
+print("Ordenado por Horas de Sol (Mayor a Menor):")
+```
+
+
+```{r}
+```
+
+
+```{r}
+print(media_horas_sol_ordenada)
+```
+
+
+```{r}
+```
+
+
+```{r}
+# Ordenar por porcentaje de población con cataratas de mayor a menor en base a la columna 'value' (porcentaje de cataratas)
+df_cataratas_ordenado <- df_solo_cataratas[order(df_solo_cataratas$value, decreasing = TRUE), ]
+
+# Mostrar los resultados ordenados
+print("Ordenado por Porcentaje de Población con Cataratas (Mayor a Menor):")
+```
+
+
+```{r}
+```
+
+
+```{r}
+print(df_cataratas_ordenado)
+```
+
+
+```{r}
+```
+
+
+```{r,error=TRUE}
+#Ordenar cataratas de mayor a menor
+# Filtrar el dataframe para obtener solo los datos de "Ambos sexos"
+df_cataratas_ambos <- subset(df_cataratas_ordenado, Sexo == "Ambos sexos")
+
+# Seleccionar solo las columnas de Comunidad y value, y mostrar el resultado
+print(df_cataratas_ambos[, c("Comunidad", "value","Sexo")])
+```
+
+
+```{r}
+```
+
+
+```{r,error=TRUE}
+#Como nos salen los valores repetidos, aplicamos distinct
+df_unicos <- distinct(df_cataratas_ordenado[, c("Comunidad", "value")])
+
+# Mostrar el resultado
+print(df_unicos)
+```
+
+
+```{r}
+```
+
+
+```{r}
+#Ahora ordenamos solo los datos de hombres

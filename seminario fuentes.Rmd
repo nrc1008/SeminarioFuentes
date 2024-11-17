@@ -6,16 +6,7 @@ date: "`r Sys.Date()`"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-#install.packages("jsonlite")
-#install.packages("pxR")
-
-
-#library(ggplot2)
-#library(jsonlite)
-#library(dplyr)
-#library(pxR)
-
+```{r}
 knitr::opts_chunk$set(echo = TRUE) 
 ```
 
@@ -34,6 +25,16 @@ Nos centraremos en unos objetivos específicos:
 3. ¿Existe una correlación estadísticamente significativa entre los niveles de exposición a la luz solar y la incidencia de cataratas?
 
 # **Materiales y métodos**
+```{r}
+#install.packages("jsonlite")
+#install.packages("pxR")
+
+
+library(ggplot2)
+library(jsonlite)
+library(dplyr)
+library(pxR)
+```
 
 ## **Estudios relacionados**
 La relación entre la aparición de cataratas y la exposición a la luz solar ha sido objeto de estudio durante muchos años, y la evidencia científica sugiere que sí existe una relación.
@@ -50,32 +51,69 @@ This is an R Markdown document. Markdown is a simple formatting syntax for autho
 
 When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
-```{r}
 
+
+```{r}
 #Importamos los datos con cada formato correspondiente
 
-datos_cataratas<-read.px("./DATA/INPUT/datos_cataratas.px")
-datos_solar<-fromJSON("./DATA/INPUT/LuzSolarProvincias.json")
+datos_cataratas<-read.px("DATA/INPUT/datos_cataratas.px")
+datos_solar<-fromJSON("DATA/INPUT/LuzSolarProvincias.json")
+```
 
+
+
+```{r}
 #Los transformamos a data frame y comprobamos algunas de sus filas
 df_datos_solar<-as.data.frame(datos_solar)
 df_datos_cataratas<-as.data.frame(datos_cataratas)
 
 summary(df_datos_cataratas)
+```
+
+
+```{r}
 summary(df_datos_solar)
+```
 
+
+```{r}
 str(df_datos_cataratas)
+```
+
+
+```{r}
 str(df_datos_solar)
+```
 
 
+```{r}
+```
+
+
+```{r}
 #De las distintas enfermedades de nuestros datos, seleccionamos las de interés, que son las cataratas
 df_solo_cataratas <- df_datos_cataratas %>%
   filter(Enfermedades == "Cataratas")
 
 # Ver los primeros registros filtrados
 head(df_solo_cataratas)
-print(df_solo_cataratas)
+```
 
+
+```{r}
+```
+
+
+```{r}
+print(df_solo_cataratas)
+```
+
+
+```{r}
+```
+
+
+```{r}
 #
 # Datos iniciales en formato data.frame
 df_datos_solar <- data.frame(
@@ -106,44 +144,109 @@ media_horas_sol <- tapply(df_datos_solar$Horas_de_sol, df_datos_solar$Comunidad,
 
 # Mostrar el resultado
 print(media_horas_sol)
+```
 
+
+```{r}
+```
+
+
+```{r}
 # Ordenar por horas de sol de mayor a menor
 media_horas_sol_ordenada <- sort(media_horas_sol, decreasing = TRUE)
 
 #Mostrar los resultados ordenados
 print("Ordenado por Horas de Sol (Mayor a Menor):")
-print(media_horas_sol_ordenada)
+```
 
+
+```{r}
+```
+
+
+```{r}
+print(media_horas_sol_ordenada)
+```
+
+
+```{r}
+```
+
+
+```{r}
 # Ordenar por porcentaje de población con cataratas de mayor a menor en base a la columna 'value' (porcentaje de cataratas)
 df_cataratas_ordenado <- df_solo_cataratas[order(df_solo_cataratas$value, decreasing = TRUE), ]
 
 # Mostrar los resultados ordenados
 print("Ordenado por Porcentaje de Población con Cataratas (Mayor a Menor):")
-print(df_cataratas_ordenado)
+```
 
+
+```{r}
+```
+
+
+```{r}
+print(df_cataratas_ordenado)
+```
+
+
+```{r}
+```
+
+
+```{r,error=TRUE}
 #Ordenar cataratas de mayor a menor
 # Filtrar el dataframe para obtener solo los datos de "Ambos sexos"
 df_cataratas_ambos <- subset(df_cataratas_ordenado, Sexo == "Ambos sexos")
 
 # Seleccionar solo las columnas de Comunidad y value, y mostrar el resultado
 print(df_cataratas_ambos[, c("Comunidad", "value","Sexo")])
+```
 
+
+```{r}
+```
+
+
+```{r,error=TRUE}
 #Como nos salen los valores repetidos, aplicamos distinct
 df_unicos <- distinct(df_cataratas_ordenado[, c("Comunidad", "value")])
 
 # Mostrar el resultado
 print(df_unicos)
+```
 
+
+```{r}
+```
+
+
+```{r}
 #Ahora ordenamos solo los datos de hombres
 df_cataratas_hombres <- subset(df_cataratas_ordenado, Sexo == "Hombres")
    #df_cataratas_ordenadohombres <- df_cataratas_hombres[order(-df_cataratas_hombres$value), ]
 print(df_cataratas_hombres[, c("Comunidad", "value","Sexo")])
+```
 
+
+```{r}
+```
+
+
+```{r}
 #Repetimos el proceso con las mujeres
 df_cataratas_mujeres <- subset(df_cataratas_ordenado, Sexo == "Mujeres")
     #df_cataratas_ordenadomujeres <- df_cataratas_mujeres[order(-df_cataratas_mujeres$value), ]
 print(df_cataratas_mujeres[, c("Comunidad", "value","Sexo")])
+```
 
+
+```{r}
+```
+
+
+```{r}
 #Como las comunidades en cataratas tienen un número alante (1-Andalucía) y además texto atrás, como por ejempo "Comunidad de Madrid" vamos a eliminar todo lo que no coincida con comunidad del otro df para poder juntarlos
 #Establecer niveles: un nivel para cada comunidad autónoma.
 nombres_correcciones <- c(
@@ -176,54 +279,111 @@ df_horas_sol <- data.frame(
 )
 
 df_horas_sol
+```
 
+
+```{r}
+```
+
+
+```{r}
 #Empezamos analizando la relacion con solo el sexo femenino
 # Aplicamos la lista de correcciones en la tabla de cataratas
 df_cataratas_mujeres$Comunidad <- nombres_correcciones[df_cataratas_mujeres$Comunidad]
 
 df_cataratas_mujeres_corregido<-nombres_correcciones[df_cataratas_mujeres$Comunidad]
 df_cataratas_mujeres_corregido
+```
 
+
+```{r}
+```
+
+
+```{r}
 #Observamos los nombres de las columnas de ambas tablas y vemos que la columna correspondiente a la comunidad autónoma tiene distintos nombres
 names(df_datos_solar)#para comprobar las columnas de los df
 names(df_solo_cataratas)
+```
 
+
+```{r}
+```
+
+
+```{r}
 # Realizamos el left join entre las dos tablas usando la columna "Comunidad.autónoma" como atributo común
 df_mujeres <- df_cataratas_mujeres %>%
   left_join(df_horas_sol, by = c("Comunidad"="Comunidad.autónoma")) #Realizamos un join sin necesidad de cambiar el nombre del atributo en una de las tablas
 
 # Ver la tabla combinada
 print(df_mujeres)
+```
 
 
+```{r}
+```
+
+
+```{r}
 #Seguimos con el genero masculino
 # Aplicamos la lista de correcciones en la tabla de cataratas
 df_cataratas_hombres$Comunidad <- nombres_correcciones[df_cataratas_hombres$Comunidad]
 
 df_cataratas_hombres_corregido<-nombres_correcciones[df_cataratas_hombres$Comunidad]
 df_cataratas_hombres_corregido
+```
 
+
+```{r}
+```
+
+
+```{r}
 # Realizamos el left join entre las dos tablas usando la columna "Comunidad.autónoma" como atributo común
 df_hombres <- df_cataratas_hombres %>%
   left_join(df_horas_sol, by = c("Comunidad"="Comunidad.autónoma"))
 
 # Ver la tabla combinada
 print(df_hombres)
+```
 
 
+```{r}
+```
+
+
+```{r}
+```
+
+
+```{r}
 #Por ultimo hacemos un analisis de ambos sexos:
 df_cataratas_ambos$Comunidad <- nombres_correcciones[df_cataratas_ambos$Comunidad]
 
 df_cataratas_ambos_corregido<-nombres_correcciones[df_cataratas_ambos$Comunidad]
 df_cataratas_ambos_corregido
+```
 
+
+```{r}
 # Realizamos el left join entre las dos tablas usando la columna "Comunidad.autónoma" como atributo común
 df_ambos <- df_cataratas_ambos %>%
   left_join(df_horas_sol, by = c("Comunidad"="Comunidad.autónoma"))
 
 # Ver la tabla combinada
 print(df_ambos)
+```
 
+<<<<<<< HEAD
+=======
+
+```{r}
+```
+
+
+```{r}
+>>>>>>> 448ca3fdb8509744e5d31396eaf7b49770a7bfa8
 #Vamos a unir los datos con su columna en común, comunidad
 
 df_datos_combinados<- left_join(df_datos_solar_ordenado_horas_sol,df_datos_cataratas_ordenado_cataratas,by="Comunidad")
@@ -236,17 +396,41 @@ df_datos_combinados<- df_datos_combinados %>%
   ))
 
 head(df_datos_combinados)
+```
 
+
+```{r}
+```
+
+
+```{r}
 #Explorar cómo varía el porcentaje de cataratas en las diferentes categorías de horas de sol
 df_combinado %>% 
   group_by(categoria_sol) %>% 
   summarise(promedio_cataratas = mean(value, na.rm = TRUE))
+```
 
+
+```{r}
+```
+
+
+```{r}
 #multiplicar el porcentaje de cataratas por las horas de sol para ver qué tan impactante es esa relación
 df_combinado <- df_combinado %>% 
   mutate(impacto = Horas_de_sol * value) # Ver los primeros resultados 
 head(df_combinado)
+```
 
+<<<<<<< HEAD
+=======
+
+```{r}
+```
+
+
+```{r}
+>>>>>>> 448ca3fdb8509744e5d31396eaf7b49770a7bfa8
 #cataratas_df <- datos_cataratas %>%
 #unnest_wider(Data) %>% 
   #mutate(enfermedad = factor(Nombre), valor = as.numeric(valor))
@@ -269,16 +453,29 @@ ggplot(data = df_mujeres, aes(x = reorder(Comunidad, -value), y = value, fill = 
   scale_fill_brewer(palette = "Set1") +  
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 60, vjust = 1, hjust = 1))
+```
 
 
+```{r}
+```
+
+
+```{r}
 ggplot(data = df_mujeres, aes(x = Comunidad, y = value, color = Horas_Sol,)) +
   geom_line() +
   labs(x = "Comunidad Autónoma", y = "Incidencia de Cataratas (%)", 
        title = "Incidencia de Cataratas en Mujeres según Comunidad Autónoma", 
        color = "Horas de Sol") +
   scale_color_gradient(low = "blue", high = "red") +
-  theme_classic() 
+  theme_classic()
+```
 
+
+```{r}
+```
+
+
+```{r}
 #Graficos Cataratas-Hombres:
 ggplot(data = df_hombres, aes(x = reorder(Comunidad, -value), y = value, fill = Comunidad)) +
   geom_bar(stat = "identity") +
@@ -286,8 +483,10 @@ ggplot(data = df_hombres, aes(x = reorder(Comunidad, -value), y = value, fill = 
   scale_fill_brewer(palette = "Set1") +  
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 60, vjust = 1, hjust = 1))
+```
 
 
+```{r}
 ggplot(data = df_hombres, aes(x = Comunidad, y = value, color = Horas_Sol, )) +
   geom_line() +
   labs(x = "Comunidad Autónoma", y = "Incidencia de Cataratas (%)", 
@@ -295,6 +494,9 @@ ggplot(data = df_hombres, aes(x = Comunidad, y = value, color = Horas_Sol, )) +
        color = "Horas de Sol") +
   scale_color_gradient(low = "blue", high = "red") +
   theme_classic() 
+
+
+```
 
 
 
