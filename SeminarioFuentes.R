@@ -14,6 +14,7 @@ install.packages("pxR")
 library(jsonlite)
 library(dplyr)
 library(pxR)
+library(tidyverse)
 
 #Importamos los datos con cada formato correspondiente
 
@@ -32,9 +33,13 @@ str(df_datos_solar)
 
 
 #De las distintas enfermedades de nuestros datos, seleccionamos las de interés, que son las cataratas
+
+levels(factor(df_datos_cataratas$Sexo))
 df_solo_cataratas <- df_datos_cataratas %>%
+  select(Comunidad.autónoma,Enfermedades,Sexo,value)%>%
   filter(Enfermedades == "Cataratas")
 
+df_solo_cataratas
 # Ver los primeros registros filtrados
 head(df_solo_cataratas)
 print(df_solo_cataratas)
@@ -69,6 +74,124 @@ media_horas_sol <- tapply(df_datos_solar$Horas_de_sol, df_datos_solar$Comunidad,
 
 # Mostrar el resultado
 print(media_horas_sol)
+df_media_horas_sol <- as.data.frame(media_horas_sol)
+df_media_horas_sol$Comunidad <- rownames(df_media_horas_sol)
+colnames(df_media_horas_sol) <- c("Media_horas_sol", "Comunidad")
+df_media_horas_sol
+
+#Creamos categorías para clasificar las horas de sol por comunidad
+df_sol_clasificado <- df_media_horas_sol%>%
+  mutate(clasificacion=case_when(
+  media_horas_sol<2500 ~ "Bajo",
+  media_horas_sol>= 2500 & media_horas_sol<3000 ~ "Medio",
+  media_horas_sol>3000 ~ "Alto"
+  ))
+
+df_sol_clasificado
+
+#Transformamos esas categorías en niveles, y contamos cuantas comunidades hay por nivel
+levels(factor(df_sol_clasificado$clasificacion))
+table(df_sol_clasificado$clasificacion)
+
+df_sol_definitivo <- df_sol_clasificado %>%
+  select(Comunidad,Media_horas_sol,clasificacion)
+
+df_sol_definitivo
+
+#Cambiamos los nombres de las comunidades para que coincidan y poder hacer un join
+df_solo_cataratas <- df_solo_cataratas %>%
+  mutate(
+    Comunidad.autónoma = case_when(
+      Comunidad.autónoma == "01 Andalucía" ~ "Andalucía",
+      Comunidad.autónoma == "02 Aragón" ~ "Aragón",
+      Comunidad.autónoma == "03 Asturias, Principado de" ~ "Asturias",
+      Comunidad.autónoma == "04 Balears, Illes" ~ "Islas Baleares",
+      Comunidad.autónoma == "05 Canarias" ~ "Islas Canarias",
+      Comunidad.autónoma == "06 Cantabria" ~ "Cantabria",
+      Comunidad.autónoma == "07 Castilla y León" ~ "Castilla y León",
+      Comunidad.autónoma == "08 Castilla - La Mancha" ~ "Castilla La-Mancha",
+      Comunidad.autónoma == "09 Cataluña" ~ "Cataluña",
+      Comunidad.autónoma == "10 Comunitat Valenciana" ~ "Comunidad Valenciana",
+      Comunidad.autónoma == "11 Extremadura" ~ "Extremadura",
+      Comunidad.autónoma == "12 Galicia" ~ "Galicia",
+      Comunidad.autónoma == "13 Madrid, Comunidad de" ~ "Madrid",
+      Comunidad.autónoma == "14 Murcia, Región de" ~ "Murcia",
+      Comunidad.autónoma == "15 Navarra, Comunidad Foral de" ~ "Navarra",
+      Comunidad.autónoma == "16 País Vasco" ~ "País Vasco",
+      Comunidad.autónoma == "17 Rioja, La" ~ "La Rioja",
+      Comunidad.autónoma == "18 Ceuta" ~ "Ceuta",
+      Comunidad.autónoma == "19 Melilla" ~ "Melilla",
+      Comunidad.autónoma == "Total Nacional" ~ "Total Nacional",
+      TRUE ~ Comunidad.autónoma  # Dejar sin cambios si no coincide
+    )
+  )
+
+print(df_solo_cataratas)
+
+#Unimos las dos tablas mediante la columna de la Comunidad Autónoma
+df_final <- df_solo_cataratas %>%
+  left_join(df_sol_definitivo, by = c("Comunidad.autónoma"="Comunidad")) #Realizamos un join sin necesidad de cambiar el nombre del atributo en una de las tablas
+
+df_final
+
+#Ordenamos de mayor a menor en función de las horas de sol
+
+
+
+
+
+
+
+# Graficamos
+
+library(ggplot2)
+library(dplyr)
+
+#Empezamos por el grafico de cataratas-horas de sol en las comunidades, solo para mujeres:
+ggplot(data = df_mujeres, aes(x = reorder(Comunidad, -value), y = value, fill = Comunidad)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Comunidad Autónoma", y = "Valor (%)")
+  scale_fill_brewer(palette = "Set1") +  
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 60, vjust = 1, hjust = 1))
+
+
+ggplot(data = df_mujeres, aes(x = Comunidad, y = value, color = Horas_Sol,)) +
+  geom_line() +
+  labs(x = "Comunidad Autónoma", y = "Incidencia de Cataratas (%)", 
+       title = "Incidencia de Cataratas en Mujeres según Comunidad Autónoma", 
+       color = "Horas de Sol") +
+  scale_color_gradient(low = "blue", high = "red") +
+  theme_classic() 
+
+#Graficos Cataratas-Hombres:
+ggplot(data = df_hombres, aes(x = reorder(Comunidad, -value), y = value, fill = Comunidad)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Comunidad Autónoma", y = "Valor (%)", title = "Distribución de la Incidencia de Cataratas en Hombres en España") +
+  scale_fill_brewer(palette = "Set1") +  
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 60, vjust = 1, hjust = 1))
+
+
+ggplot(data = df_hombres, aes(x = Comunidad, y = value, color = Horas_Sol, )) +
+  geom_line() +
+  labs(x = "Comunidad Autónoma", y = "Incidencia de Cataratas (%)", 
+       title = "Incidencia de Cataratas en Hombres según Comunidad Autónoma", 
+       color = "Horas de Sol") +
+  scale_color_gradient(low = "blue", high = "red") +
+  theme_classic() 
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -90,10 +213,6 @@ print("Ordenado por Porcentaje de Población con Cataratas (Mayor a Menor):")
 print(df_cataratas_ordenado)
 
 
-
-
-
-
 #Ordenar cataratas de mayor a menor
 # Filtrar el dataframe para obtener solo los datos de "Ambos sexos"
 df_cataratas_ambos <- subset(df_cataratas_ordenado, Sexo == "Ambos sexos")
@@ -109,47 +228,15 @@ print(df_unicos)
 
 #Ahora ordenamos solo los datos de hombres
 df_cataratas_hombres <- subset(df_cataratas_ordenado, Sexo == "Hombres")
-   #df_cataratas_ordenadohombres <- df_cataratas_hombres[order(-df_cataratas_hombres$value), ]
+#df_cataratas_ordenadohombres <- df_cataratas_hombres[order(-df_cataratas_hombres$value), ]
 print(df_cataratas_hombres[, c("Comunidad", "value","Sexo")])
 
 #Repetimos el proceso con las mujeres
 df_cataratas_mujeres <- subset(df_cataratas_ordenado, Sexo == "Mujeres")
-    #df_cataratas_ordenadomujeres <- df_cataratas_mujeres[order(-df_cataratas_mujeres$value), ]
+#df_cataratas_ordenadomujeres <- df_cataratas_mujeres[order(-df_cataratas_mujeres$value), ]
 print(df_cataratas_mujeres[, c("Comunidad", "value","Sexo")])
 
 
-#Como las comunidades en cataratas tienen un número alante (1-Andalucía) y además texto atrás, como por ejempo "Comunidad de Madrid" vamos a eliminar todo lo que no coincida con comunidad del otro df para poder juntarlos
-#Establecer niveles: un nivel para cada comunidad autónoma.
-nombres_correcciones <- c(
-  "Andalucía" = "Andalucía",
-  "Murcia, Región de" = "Murcia",
-  "Navarra, Comunidad Foral de" = "Navarra",
-  "Balears, Illes" = "Islas Baleares",
-  "Canarias" = "Islas Canarias",
-  "Castilla - La Mancha" = "Castilla La-Mancha",
-  "Castilla y León" = "Castilla y León",
-  "Cataluña" = "Cataluña",
-  "Comunitat Valenciana" = "Comunidad Valenciana",
-  "País Vasco" = "País Vasco",
-  "Aragón" = "Aragón",
-  "Asturias, Principado de" = "Asturias",
-  "Galicia" = "Galicia",
-  "Madrid, Comunidad de" = "Madrid",
-  "Cantabria" = "Cantabria",
-  "La Rioja" = "La Rioja",
-  "Extremadura" = "Extremadura",
-  "Ceuta" = "Ceuta",
-  "Melilla" = "Melilla"
-)
-
-
-# Crear un data frame para horas de sol
-df_horas_sol <- data.frame(
-  Comunidad = names(media_horas_sol_ordenada),
-  Horas_Sol = as.vector(media_horas_sol_ordenada)
-)
-
-df_horas_sol
 
 #Empezamos analizando la relacion con solo el sexo femenino
 # Aplicamos la lista de correcciones en la tabla de cataratas
@@ -198,19 +285,6 @@ df_ambos <- df_cataratas_ambos %>%
 # Ver la tabla combinada
 print(df_ambos)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 #Vamos a unir los datos con su columna en común, comunidad
 
 df_datos_combinados<- left_join(df_datos_solar_ordenado_horas_sol,df_datos_cataratas_ordenado_cataratas,by="Comunidad")
@@ -247,50 +321,11 @@ head(df_combinado)
 
 #cataratas_df <- datos_cataratas %>%
 #unnest_wider(Data) %>% 
-  #mutate(enfermedad = factor(Nombre), valor = as.numeric(valor))
+#mutate(enfermedad = factor(Nombre), valor = as.numeric(valor))
 
 #solar_df <- datos_solar %>%
 #as.data.frame() %>%
-  #mutate(fecha = as.Date(fecha), # Asegúrate de que la fecha esté en el formato correcto
-         #temperatura = as.numeric(temperatura)
+#mutate(fecha = as.Date(fecha), # Asegúrate de que la fecha esté en el formato correcto
+#temperatura = as.numeric(temperatura)
 
-
-# Graficamos
-
-library(ggplot2)
-library(dplyr)
-
-#Empezamos por el grafico de cataratas-horas de sol en las comunidades, solo para mujeres:
-ggplot(data = df_mujeres, aes(x = reorder(Comunidad, -value), y = value, fill = Comunidad)) +
-  geom_bar(stat = "identity") +
-  labs(x = "Comunidad Autónoma", y = "Valor (%)")
-  scale_fill_brewer(palette = "Set1") +  
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 60, vjust = 1, hjust = 1))
-
-
-ggplot(data = df_mujeres, aes(x = Comunidad, y = value, color = Horas_Sol,)) +
-  geom_line() +
-  labs(x = "Comunidad Autónoma", y = "Incidencia de Cataratas (%)", 
-       title = "Incidencia de Cataratas en Mujeres según Comunidad Autónoma", 
-       color = "Horas de Sol") +
-  scale_color_gradient(low = "blue", high = "red") +
-  theme_classic() 
-
-#Graficos Cataratas-Hombres:
-ggplot(data = df_hombres, aes(x = reorder(Comunidad, -value), y = value, fill = Comunidad)) +
-  geom_bar(stat = "identity") +
-  labs(x = "Comunidad Autónoma", y = "Valor (%)", title = "Distribución de la Incidencia de Cataratas en Hombres en España") +
-  scale_fill_brewer(palette = "Set1") +  
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 60, vjust = 1, hjust = 1))
-
-
-ggplot(data = df_hombres, aes(x = Comunidad, y = value, color = Horas_Sol, )) +
-  geom_line() +
-  labs(x = "Comunidad Autónoma", y = "Incidencia de Cataratas (%)", 
-       title = "Incidencia de Cataratas en Hombres según Comunidad Autónoma", 
-       color = "Horas de Sol") +
-  scale_color_gradient(low = "blue", high = "red") +
-  theme_classic() 
 
