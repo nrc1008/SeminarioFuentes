@@ -34,7 +34,7 @@ str(df_datos_solar)
 
 #De las distintas enfermedades de nuestros datos, seleccionamos las de interés, que son las cataratas
 
-levels(factor(df_datos_cataratas$Sexo))
+factor(df_datos_cataratas$Sexo)
 df_solo_cataratas <- df_datos_cataratas %>%
   select(Comunidad.autónoma,Enfermedades,Sexo,value)%>%
   filter(Enfermedades == "Cataratas")
@@ -68,7 +68,12 @@ df_datos_solar <- data.frame(
                       5.72, 5.76, 5.57, 5.59, 5.78, 5.27, 4.98, 5.31, 5.11, 5.34, 5.02, 5.1, 5.39, 5.43, 5.74, 5.73, 5.59, 
                       5.73, 5.74, 5.7, 4.3, 4.3, 4.8, 4.4, 5.3, 5.3, 5.3, 5.9, 5.9, 4.54, 5.7, 4.74, 4.2, 3.6, 3.86)
 )
-
+#Separar la columna comunidad.provincia con split y crear nombres para cada columna. Eliminar paso anterior
+comunidad <- colnames(df_datos_solar[1])
+str(df_datos_solar)
+split_columnas <- strsplit(colnames(df_datos_solar[1]), split = ".")
+str(split_columnas)
+df_datos_solar = strsplit(x = df_datos_solar[1], split = ".")
 # Calcular la media de Horas de Sol por Comunidad
 media_horas_sol <- tapply(df_datos_solar$Horas_de_sol, df_datos_solar$Comunidad, mean)
 
@@ -80,18 +85,21 @@ colnames(df_media_horas_sol) <- c("Media_horas_sol", "Comunidad")
 df_media_horas_sol
 
 #Creamos categorías para clasificar las horas de sol por comunidad
-df_sol_clasificado <- df_media_horas_sol%>%
-  mutate(clasificacion=case_when(
-  media_horas_sol<2500 ~ "Bajo",
-  media_horas_sol>= 2500 & media_horas_sol<3000 ~ "Medio",
-  media_horas_sol>3000 ~ "Alto"
-  ))
+df_sol_clasificado <- df_media_horas_sol %>%
+  mutate(
+    clasificacion = factor(case_when(
+      media_horas_sol < 2500 ~ "Bajo",
+      media_horas_sol >= 2500 & media_horas_sol < 3000 ~ "Medio",
+      media_horas_sol > 3000 ~ "Alto"
+    )
+  )
+)
 
-df_sol_clasificado
+str(df_sol_clasificado)
 
 #Transformamos esas categorías en niveles, y contamos cuantas comunidades hay por nivel
-levels(factor(df_sol_clasificado$clasificacion))
-table(df_sol_clasificado$clasificacion)
+#levels(factor(df_sol_clasificado$clasificacion))
+#table(df_sol_clasificado$clasificacion)
 
 df_sol_definitivo <- df_sol_clasificado %>%
   select(Comunidad,Media_horas_sol,clasificacion)
@@ -182,14 +190,17 @@ library(dplyr)
 #Empezamos por el grafico de cataratas-horas de sol en las comunidades, solo para mujeres:
 
 
-ggplot(data = df_mujeres, aes(x = Comunidad.autónoma, y = value, colour = Media_horas_sol)) +
-  geom_bar() +
+ggplot(data = df_mujeres, aes(x = reorder(Comunidad.autónoma,-value), y = value) ) +
+  geom_bar(stat = "identity", aes(fill = Media_horas_sol) ) +
   labs(x = "Comunidad Autónoma", 
        y = "Incidencia de Cataratas (%)", 
        title = "Incidencia de Cataratas en Mujeres según Comunidad Autónoma", 
        colour = "Horas de Sol") +
   scale_color_gradient(low = "blue", high = "red") +
   theme_classic() 
+
+#Gráfico %, horas de sol (gráfico dispersión, además una curva para cada sexo)
+#TODO
 
 
 
