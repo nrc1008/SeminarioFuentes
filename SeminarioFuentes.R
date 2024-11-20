@@ -124,7 +124,8 @@ df_solo_cataratas <- df_solo_cataratas %>%
       Comunidad.autónoma == "Total Nacional" ~ "Total Nacional",
       TRUE ~ Comunidad.autónoma  # Dejar sin cambios si no coincide
     )
-  )
+  )%>% 
+  filter(!Comunidad.autónoma %in% c("Total Nacional"))
 
 print(df_solo_cataratas)
 
@@ -135,12 +136,43 @@ df_final <- df_solo_cataratas %>%
 df_final
 
 #Ordenamos de mayor a menor en función de las horas de sol
+df_final_sol<-df_final%>%
+  group_by(Comunidad.autónoma)%>%
+  select(Media_horas_sol,clasificacion,Sexo,value)%>%
+  arrange(desc(Media_horas_sol))
 
+df_final_sol
 
+df_final_cataratas<-df_final%>%
+  group_by(Comunidad.autónoma)%>%
+  select(Media_horas_sol,clasificacion,Sexo,value)%>%
+  arrange(desc(value))
 
+df_final_cataratas
 
+df_mujeres<-df_final%>%
+  group_by(Comunidad.autónoma)%>%
+  select(Media_horas_sol,clasificacion,Sexo,value)%>%
+  filter(Sexo=="Mujeres")%>%
+  arrange(desc(Media_horas_sol))
 
+df_mujeres
 
+df_hombres<- df_final%>%
+  group_by(Comunidad.autónoma)%>%
+  select(Media_horas_sol,clasificacion,Sexo,value)%>%
+  filter(Sexo=="Hombres")%>%
+  arrange(desc(Media_horas_sol))
+
+df_hombres
+
+df_ambos<-df_final%>%
+  group_by(Comunidad.autónoma)%>%
+  select(Media_horas_sol,clasificacion,Sexo,value)%>%
+  filter(Sexo=="Ambos sexos")%>%
+  arrange(desc(Media_horas_sol))
+
+df_ambos
 
 # Graficamos
 
@@ -148,21 +180,18 @@ library(ggplot2)
 library(dplyr)
 
 #Empezamos por el grafico de cataratas-horas de sol en las comunidades, solo para mujeres:
-ggplot(data = df_mujeres, aes(x = reorder(Comunidad, -value), y = value, fill = Comunidad)) +
-  geom_bar(stat = "identity") +
-  labs(x = "Comunidad Autónoma", y = "Valor (%)")
-  scale_fill_brewer(palette = "Set1") +  
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 60, vjust = 1, hjust = 1))
 
 
-ggplot(data = df_mujeres, aes(x = Comunidad, y = value, color = Horas_Sol,)) +
-  geom_line() +
-  labs(x = "Comunidad Autónoma", y = "Incidencia de Cataratas (%)", 
+ggplot(data = df_mujeres, aes(x = Comunidad.autónoma, y = value, colour = Media_horas_sol)) +
+  geom_bar() +
+  labs(x = "Comunidad Autónoma", 
+       y = "Incidencia de Cataratas (%)", 
        title = "Incidencia de Cataratas en Mujeres según Comunidad Autónoma", 
-       color = "Horas de Sol") +
+       colour = "Horas de Sol") +
   scale_color_gradient(low = "blue", high = "red") +
   theme_classic() 
+
+
 
 #Graficos Cataratas-Hombres:
 ggplot(data = df_hombres, aes(x = reorder(Comunidad, -value), y = value, fill = Comunidad)) +
@@ -183,6 +212,12 @@ ggplot(data = df_hombres, aes(x = Comunidad, y = value, color = Horas_Sol, )) +
 
 
 
+ggplot(data = df_mujeres, aes(x = reorder(Comunidad.autónoma, -value), y = value, fill = Comunidad.autónoma)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Comunidad Autónoma", y = "Valor (%)")
+scale_fill_brewer(palette = "Set1") +  
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 60, vjust = 1, hjust = 1))
 
 
 
