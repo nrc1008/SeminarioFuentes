@@ -44,7 +44,7 @@ df_solo_cataratas
 head(df_solo_cataratas)
 print(df_solo_cataratas)
 
-#
+
 # Datos iniciales en formato data.frame
 df_datos_solar <- data.frame(
   Comunidad = c('Andalucía', 'Andalucía', 'Andalucía', 'Andalucía', 'Andalucía', 'Andalucía', 'Andalucía', 'Andalucía', 
@@ -68,14 +68,17 @@ df_datos_solar <- data.frame(
                       5.72, 5.76, 5.57, 5.59, 5.78, 5.27, 4.98, 5.31, 5.11, 5.34, 5.02, 5.1, 5.39, 5.43, 5.74, 5.73, 5.59, 
                       5.73, 5.74, 5.7, 4.3, 4.3, 4.8, 4.4, 5.3, 5.3, 5.3, 5.9, 5.9, 4.54, 5.7, 4.74, 4.2, 3.6, 3.86)
 )
+
+
 #Separar la columna comunidad.provincia con split y crear nombres para cada columna. Eliminar paso anterior
 comunidad <- colnames(df_datos_solar[1])
 str(df_datos_solar)
 split_columnas <- strsplit(colnames(df_datos_solar[1]), split = ".")
 str(split_columnas)
-df_datos_solar = strsplit(x = df_datos_solar[1], split = ".")
+df_datos_solar = strsplit(as.character(df_datos_solar[1]), split = ".")
 # Calcular la media de Horas de Sol por Comunidad
 media_horas_sol <- tapply(df_datos_solar$Horas_de_sol, df_datos_solar$Comunidad, mean)
+
 
 # Mostrar el resultado
 print(media_horas_sol)
@@ -97,9 +100,11 @@ df_sol_clasificado <- df_media_horas_sol %>%
 
 str(df_sol_clasificado)
 
+
 #Transformamos esas categorías en niveles, y contamos cuantas comunidades hay por nivel
 #levels(factor(df_sol_clasificado$clasificacion))
 #table(df_sol_clasificado$clasificacion)
+
 
 df_sol_definitivo <- df_sol_clasificado %>%
   select(Comunidad,Media_horas_sol,clasificacion)
@@ -135,7 +140,9 @@ df_solo_cataratas <- df_solo_cataratas %>%
   )%>% 
   filter(!Comunidad.autónoma %in% c("Total Nacional"))
 
+
 print(df_solo_cataratas)
+
 
 #Unimos las dos tablas mediante la columna de la Comunidad Autónoma
 df_final <- df_solo_cataratas %>%
@@ -229,18 +236,6 @@ ggplot(data = df_mujeres, aes(x = reorder(Comunidad.autónoma, -value), y = valu
 scale_fill_brewer(palette = "Set1") +  
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 60, vjust = 1, hjust = 1))
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
