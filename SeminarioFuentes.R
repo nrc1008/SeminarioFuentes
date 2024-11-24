@@ -76,6 +76,9 @@ str(df_datos_solar)
 split_columnas <- strsplit(colnames(df_datos_solar[1]), split = ".")
 str(split_columnas)
 df_datos_solar = strsplit(as.character(df_datos_solar[1]), split = ".")
+
+#df_solar <- as.data.frame(df_datos_solar)
+#print(df_solar)
 # Calcular la media de Horas de Sol por Comunidad
 media_horas_sol <- tapply(df_datos_solar$Horas_de_sol, df_datos_solar$Comunidad, mean)
 
