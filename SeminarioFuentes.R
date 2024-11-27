@@ -15,6 +15,7 @@ library(jsonlite)
 library(dplyr)
 library(pxR)
 library(tidyverse)
+library(tidyr)
 
 #Importamos los datos con cada formato correspondiente
 
@@ -71,16 +72,42 @@ df_datos_solar <- data.frame(
 
 
 #Separar la columna comunidad.provincia con split y crear nombres para cada columna. Eliminar paso anterior
-comunidad <- colnames(df_datos_solar[1])
-str(df_datos_solar)
-split_columnas <- strsplit(colnames(df_datos_solar[1]), split = ".")
-str(split_columnas)
-df_datos_solar = strsplit(as.character(df_datos_solar[1]), split = ".")
+df_datos_solar<- df_datos_solar %>%
+  mutate(across(everything(), as.character))
+print(df_datos_solar)
+summary(df_datos_solar)
+         
+df_sol_largo <- df_datos_solar %>%
+  pivot_longer(
+    cols = everything(),
+    names_to = "Comunidad.Provincia",
+    values_to = "Valores"
+  )
+print(df_sol_largo)
 
-#df_solar <- as.data.frame(df_datos_solar)
-#print(df_solar)
+df_sol_largo <- df_sol_largo%>%
+  mutate(Valores = as.numeric(Valores))
+  
+print(df_sol_largo)
+ 
+df_sol_largo <- df_sol_largo%>%
+  separate(
+    col = Comunidad.Provincia,
+    into = c("Comunidad", "Provincia"),
+    sep ="\\."
+) 
+print(df_sol_largo)
+  
+
 # Calcular la media de Horas de Sol por Comunidad
-media_horas_sol <- tapply(df_datos_solar$Horas_de_sol, df_datos_solar$Comunidad, mean)
+media_horas_sol <- df_sol_largo%>%
+  group_by(Comunidad)%>%
+  summarize(MediaHorasSol = mean(Valores, na.rm=TRUE))
+print(media_horas_sol)
+
+unique(df_sol_largo$Comunidad)
+
+media_horas_sol <- tapply(df_sol_largo$Valores, df_sol_largo$Comunidad, mean)
 
 
 # Mostrar el resultado
