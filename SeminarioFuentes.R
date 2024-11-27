@@ -72,6 +72,59 @@ df_datos_solar <- data.frame(
 
 
 #Separar la columna comunidad.provincia con split y crear nombres para cada columna. Eliminar paso anterior
+print(df_datos_solar)
+colnames(df_datos_solar)
+
+# Pivotar los datos a formato largo
+df_sol_largo <- df_datos_solar %>%
+  t() %>%  # Transponer el dataframe (filas a columnas)
+  as.data.frame() %>%  # Convertirlo nuevamente en dataframe
+  rownames_to_column(var = "Categoria") %>%  # Convertir las filas en columna "Categoria"
+  pivot_longer(
+    cols = -Categoria,  # Excluir la columna "Categoria" (que tiene los nombres de las ubicaciones)
+    names_to = "Comunidad.Provincia",  # Ubicaciones en una columna
+    values_to = "Horas de sol"         # Valores de "Horas de sol"
+  ) %>%
+  filter(Categoria == "Horas de sol") %>%  # Filtrar solo las filas correspondientes a "Horas de sol"
+  #select(-Categoria) 
+
+print(df_sol_largo)
+
+# Separar 'Comunidad.Provincia' en dos columnas
+df_sol_largo <- df_sol_largo %>%
+  separate(
+    col = Comunidad.Provincia,
+    into = c("Comunidad", "Provincia"),
+    sep = "\\."
+  )
+
+# Verificamos el dataframe después de la transformación
+print(head(df_sol_largo))
+
+# Calcular la media de las horas de sol por comunidad
+media_horas_sol <- df_sol_largo %>%
+  group_by(Comunidad) %>%
+  summarize(MediaHorasSol = mean(`Horas de sol`, na.rm = TRUE))
+
+# Mostrar el resultado final
+print(media_horas_sol)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 df_datos_solar<- df_datos_solar %>%
   mutate(across(everything(), as.character))
 print(df_datos_solar)
