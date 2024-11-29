@@ -504,6 +504,11 @@ ggplot(data = df_hombres, aes(x = Comunidad, y = value, color = Horas_Sol, )) +
 
 ```
 
+# **Bibliografía**
+https://rstudio.github.io/DT/
+https://tidyr.tidyverse.org/reference/separate.html
+OpenAI. (2024). ChatGPT (noviembre de 2024). Disponible en https://chat.openai.com
+
 
 
 ```

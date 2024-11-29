@@ -70,31 +70,25 @@ df_datos_solar <- data.frame(
                       5.73, 5.74, 5.7, 4.3, 4.3, 4.8, 4.4, 5.3, 5.3, 5.3, 5.9, 5.9, 4.54, 5.7, 4.74, 4.2, 3.6, 3.86)
 )
 
+#Calculamos la media de horas de sol para cada comunidad usando tapply.
 media_horas_sol <- tapply(df_datos_solar$Horas_de_sol, df_datos_solar$Comunidad, mean)
 print(media_horas_sol)
 
 
-#LO SIGUIENTE NO NOS FUNCIONA, POR LO QUE HACEMOS EL DATA FRAME MANUALMENTE, PERO PROPORCIONAMOS LA ALTERNATIVA.
-#Separar la columna comunidad.provincia con split y crear nombres para cada columna. Eliminar paso anterior
+#A continuación, proporcionamos una alternativa a la creación manual del data frame.
 print(df_datos_solar)
 colnames(df_datos_solar)
 
-# Pivotar los datos a formato largo
+# Primero, pivotamos los datos a formato largo
 df_sol_largo <- df_datos_solar %>%
-  t() %>%  # Transponer el dataframe (filas a columnas)
-  as.data.frame() %>%  # Convertirlo nuevamente en dataframe
-  rownames_to_column(var = "Categoria") %>%  # Convertir las filas en columna "Categoria"
   pivot_longer(
-    cols = -Categoria,  # Excluir la columna "Categoria" (que tiene los nombres de las ubicaciones)
-    names_to = "Comunidad.Provincia",  # Ubicaciones en una columna
-    values_to = "Horas de sol"         # Valores de "Horas de sol"
-  ) %>%
-  filter(Categoria == "Horas de sol") %>%  # Filtrar solo las filas correspondientes a "Horas de sol"
-  #select(-Categoria) 
-
+    cols = everything(), # Seleccionar todas las columnas para pivotar
+    names_to = "Comunidad.Provincia", # Nombre de la nueva columna para las comunidades y provincias
+    values_to = "Horas de sol"     # Nombre de la nueva columna para los valores de horas de sol
+  )
 print(df_sol_largo)
 
-# Separar 'Comunidad.Provincia' en dos columnas
+# Separar 'Comunidad.Provincia' en dos columnas con el comando separate
 df_sol_largo <- df_sol_largo %>%
   separate(
     col = Comunidad.Provincia,
@@ -105,79 +99,15 @@ df_sol_largo <- df_sol_largo %>%
 # Verificamos el dataframe después de la transformación
 print(head(df_sol_largo))
 
-# Calcular la media de las horas de sol por comunidad
-media_horas_sol <- df_sol_largo %>%
-  group_by(Comunidad) %>%
-  summarize(MediaHorasSol = mean(`Horas de sol`, na.rm = TRUE))
+# Calculamos la media de las horas de sol por comunidad, para ello importamos una función que hemos realizado
+source("INPUT/FUNCTIONS/CalcularMediaSol.R")
+calcular_media_horas_sol(df_sol_largo)
 
-# Mostrar el resultado final
+# Mostramos el resultado final
 print(media_horas_sol)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-df_datos_solar<- df_datos_solar %>%
-  mutate(across(everything(), as.character))
-print(df_datos_solar)
-summary(df_datos_solar)
-         
-df_sol_largo <- df_datos_solar %>%
-  pivot_longer(
-    cols = everything(),
-    names_to = "Comunidad.Provincia",
-    values_to = "Valores"
-  )
-print(df_sol_largo)
-
-df_sol_largo <- df_sol_largo%>%
-  mutate(Valores = as.numeric(Valores))
-  
-print(df_sol_largo)
- 
-df_sol_largo <- df_sol_largo%>%
-  separate(
-    col = Comunidad.Provincia,
-    into = c("Comunidad", "Provincia"),
-    sep ="\\."
-) 
-print(df_sol_largo)
-  
-
-# Calcular la media de Horas de Sol por Comunidad
-media_horas_sol <- df_sol_largo%>%
-  group_by(Comunidad)%>%
-  summarize(MediaHorasSol = mean(Valores, na.rm=TRUE))
-print(media_horas_sol)
-
-unique(df_sol_largo$Comunidad)
-
-
-
-#CONTINUAMOS AQUÍ:
-media_horas_sol <- tapply(df_sol_largo$Valores, df_sol_largo$Comunidad, mean)
-
-
-# Mostrar el resultado
-print(media_horas_sol)
-df_media_horas_sol <- as.data.frame(media_horas_sol)
-df_media_horas_sol$Comunidad <- rownames(df_media_horas_sol)
-colnames(df_media_horas_sol) <- c("Media_horas_sol", "Comunidad")
-df_media_horas_sol
-
-#Creamos categorías para clasificar las horas de sol por comunidad
+#Creamos categorías para clasificar las horas de sol por comunidad y transformamos las categorías en factores
 df_sol_clasificado <- df_media_horas_sol %>%
   mutate(
     clasificacion = factor(case_when(
@@ -189,11 +119,6 @@ df_sol_clasificado <- df_media_horas_sol %>%
 )
 
 str(df_sol_clasificado)
-
-
-#Transformamos esas categorías en niveles, y contamos cuantas comunidades hay por nivel
-#levels(factor(df_sol_clasificado$clasificacion))
-#table(df_sol_clasificado$clasificacion)
 
 
 df_sol_definitivo <- df_sol_clasificado %>%
