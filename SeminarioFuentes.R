@@ -9,6 +9,8 @@ system('git push -u origin main')  # Sube los archivos al repositorio remoto
 #Instalamos los paquetes
 install.packages("jsonlite")
 install.packages("pxR")
+options(timeout = 300)
+install.packages("sf")
 
 #Importamos las librerías
 library(jsonlite)
@@ -16,6 +18,7 @@ library(dplyr)
 library(pxR)
 library(tidyverse)
 library(tidyr)
+library(sf)
 
 #Importamos los datos con cada formato correspondiente
 
@@ -70,9 +73,69 @@ df_datos_solar <- data.frame(
                       5.73, 5.74, 5.7, 4.3, 4.3, 4.8, 4.4, 5.3, 5.3, 5.3, 5.9, 5.9, 4.54, 5.7, 4.74, 4.2, 3.6, 3.86)
 )
 
+#Antes de empezar a manejar los datos, crearemos un mapa para ver reflejadas tanto las cataratas
+#como las horas de sol por regiones, en mapas distintivos para cada una de ellas
+
+mapa_espana <- st_read("./DATA/INPUT/ESP_adm1.shp")
+print(mapa_espana)
+# Revisar los nombres de las columnas
+colnames(mapa_espana)
+
+# Revisar las regiones del mapa para ver cómo se llaman
+# Ver los valores únicos de la columna NAME_1 (Comunidades Autónomas)
+unique(mapa_espana$NAME_1)
+
+# Realizamos la unión de los datos
+mapa_espana_completo <- mapa_espana %>%
+  left_join(df_datos_solar, by = c("NAME_1" = "Comunidad"))
+
+# Crear el mapa con las horas de sol
+ggplot(data = mapa_espana_completo) +
+  geom_sf(aes(fill = `Horas_de_sol`)) +  # Asegúrate de que el nombre de la columna con las horas de sol sea correcto
+  scale_fill_viridis_c() +  # Usar una paleta de colores continua
+  theme_minimal() + 
+  labs(title = "Horas de Sol por Comunidad Autónoma en España", 
+       fill = "Horas de Sol") +
+  theme(axis.text = element_blank(),
+        axis.title = element_blank())
+
+#Ahora veremos las cataratas por comunidad
+mapa_espana_completo <- mapa_espana %>%
+  left_join(df_solo_cataratas, by = c("NAME_1" = "Comunidad.autónoma"))
+
+# Crear el mapa con las cataratas
+ggplot(data = mapa_espana_completo) +
+  geom_sf(aes(fill = `Enfermedades`)) +  # Asegúrate de que el nombre de la columna con las horas de sol sea correcto
+  scale_fill_viridis_c() +  # Usar una paleta de colores continua
+  theme_minimal() + 
+  labs(title = "Cataratas por Comunidad Autónoma en España", 
+       fill = "Cataratas") +
+  theme(axis.text = element_blank(),
+        axis.title = element_blank())
+
+
+df_solo_cataratas$Comunidad.autónoma <- trimws(df_solo_cataratas$Comunidad.autónoma)  # Eliminar espacios extra
+mapa_espana_completo$NAME_1 <- trimws(mapa_espana_completo$NAME_1)  # Eliminar espacios extra
+
+mapa_espana_completo <- mapa_espana_completo %>%
+  left_join(df_solo_cataratas, by = c("NAME_1" = "Comunidad.autónoma"))
+
+head(mapa_espana_completo)
+
+ggplot(data = mapa_espana_completo) +
+  geom_sf(aes(fill = value)) +  # 'value' es la columna que contiene los valores de cataratas
+  scale_fill_viridis_c() +  # Usar una paleta de colores continua
+  theme_minimal() + 
+  labs(title = "Cataratas por Comunidad Autónoma en España", 
+       fill = "Cataratas (Valor)") +
+  theme(axis.text = element_blank(),
+        axis.title = element_blank())
+
+
 #Calculamos la media de horas de sol para cada comunidad usando tapply.
 media_horas_sol <- tapply(df_datos_solar$Horas_de_sol, df_datos_solar$Comunidad, mean)
 print(media_horas_sol)
+
 
 
 #A continuación, proporcionamos una alternativa a la creación manual del data frame.
@@ -100,7 +163,7 @@ df_sol_largo <- df_sol_largo %>%
 print(head(df_sol_largo))
 
 # Calculamos la media de las horas de sol por comunidad, para ello importamos una función que hemos realizado
-source("INPUT/FUNCTIONS/CalcularMediaSol.R")
+source("FUNCTIONS/CalcularMediaSol.R")
 calcular_media_horas_sol(df_sol_largo)
 
 # Mostramos el resultado final
@@ -180,7 +243,6 @@ df_final_cataratas<-df_final%>%
   arrange(desc(value))
 
 df_final_cataratas
-
 
 #Realizamos el estudio en función de los sexos
 df_mujeres<-df_final%>%
