@@ -74,6 +74,7 @@ df_datos_solar <- data.frame(
                       5.72, 5.76, 5.57, 5.59, 5.78, 5.27, 4.98, 5.31, 5.11, 5.34, 5.02, 5.1, 5.39, 5.43, 5.74, 5.73, 5.59, 
                       5.73, 5.74, 5.7, 4.3, 4.3, 4.8, 4.4, 5.3, 5.3, 5.3, 5.9, 5.9, 4.54, 5.7, 4.74, 4.2, 3.6, 3.86)
 )
+
 #Para tener un concepto mas visual antes de empezar a relacionar nuestros datos, vamos a crear un esquema relacional para explicaros con que data frames vamos a trabajar y como los vamos a unir
 # Crear el esquema relacional 
 grViz("
@@ -129,7 +130,7 @@ mapa_espana_completo <- mapa_espana %>%
 
 # Crear el mapa con las horas de sol
 ggplot(data = mapa_espana_completo) +
-  geom_sf(aes(fill = `Horas_de_sol`)) +  # Asegúrate de que el nombre de la columna con las horas de sol sea correcto
+  geom_sf(aes(fill = `Horas_de_sol`)) +  
   scale_fill_viridis_c() +  # Usar una paleta de colores continua
   theme_minimal() + 
   labs(title = "Horas de Sol por Comunidad Autónoma en España", 
@@ -142,15 +143,6 @@ mapa_espana_completo <- mapa_espana %>%
   left_join(df_solo_cataratas, by = c("NAME_1" = "Comunidad.autónoma"))
 
 # Crear el mapa con las cataratas
-ggplot(data = mapa_espana_completo) +
-  geom_sf(aes(fill = `Enfermedades`)) +  # Asegúrate de que el nombre de la columna con las horas de sol sea correcto
-  scale_fill_viridis_c() +  # Usar una paleta de colores continua
-  theme_minimal() + 
-  labs(title = "Cataratas por Comunidad Autónoma en España", 
-       fill = "Cataratas") +
-  theme(axis.text = element_blank(),
-        axis.title = element_blank())
-
 
 df_solo_cataratas$Comunidad.autónoma <- trimws(df_solo_cataratas$Comunidad.autónoma)  # Eliminar espacios extra
 mapa_espana_completo$NAME_1 <- trimws(mapa_espana_completo$NAME_1)  # Eliminar espacios extra
@@ -161,8 +153,8 @@ mapa_espana_completo <- mapa_espana_completo %>%
 head(mapa_espana_completo)
 
 ggplot(data = mapa_espana_completo) +
-  geom_sf(aes(fill = value)) +  # 'value' es la columna que contiene los valores de cataratas
-  scale_fill_viridis_c() +  # Usar una paleta de colores continua
+  geom_sf(aes(fill = value)) +  
+  scale_fill_viridis_c() +  
   theme_minimal() + 
   labs(title = "Cataratas por Comunidad Autónoma en España", 
        fill = "Cataratas (Valor)") +
@@ -173,8 +165,6 @@ ggplot(data = mapa_espana_completo) +
 #Calculamos la media de horas de sol para cada comunidad usando tapply.
 media_horas_sol <- tapply(df_datos_solar$Horas_de_sol, df_datos_solar$Comunidad, mean)
 print(media_horas_sol)
-
-
 
 #A continuación, proporcionamos una alternativa a la creación manual del data frame.
 print(df_datos_solar)
@@ -221,7 +211,6 @@ df_sol_clasificado <- df_media_horas_sol %>%
 
 str(df_sol_clasificado)
 
-
 df_sol_definitivo <- df_sol_clasificado %>%
   select(Comunidad,Media_horas_sol,clasificacion)
 
@@ -256,9 +245,7 @@ df_solo_cataratas <- df_solo_cataratas %>%
   )%>% 
   filter(!Comunidad.autónoma %in% c("Total Nacional"))
 
-
 print(df_solo_cataratas)
-
 
 #Unimos las dos tablas mediante la columna de la Comunidad Autónoma
 df_final <- df_solo_cataratas %>%
