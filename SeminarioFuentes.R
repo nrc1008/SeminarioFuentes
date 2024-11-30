@@ -11,6 +11,8 @@ install.packages("jsonlite")
 install.packages("pxR")
 options(timeout = 300)
 install.packages("sf")
+install.packages("DiagrammeR")
+
 
 #Importamos las librerías
 library(jsonlite)
@@ -19,7 +21,7 @@ library(pxR)
 library(tidyverse)
 library(tidyr)
 library(sf)
-
+library(DiagrammeR)
 #Importamos los datos con cada formato correspondiente
 
 datos_cataratas<-read.px("./DATA/INPUT/datos_cataratas.px")
@@ -72,6 +74,42 @@ df_datos_solar <- data.frame(
                       5.72, 5.76, 5.57, 5.59, 5.78, 5.27, 4.98, 5.31, 5.11, 5.34, 5.02, 5.1, 5.39, 5.43, 5.74, 5.73, 5.59, 
                       5.73, 5.74, 5.7, 4.3, 4.3, 4.8, 4.4, 5.3, 5.3, 5.3, 5.9, 5.9, 4.54, 5.7, 4.74, 4.2, 3.6, 3.86)
 )
+#Para tener un concepto mas visual antes de empezar a relacionar nuestros datos, vamos a crear un esquema relacional para explicaros con que data frames vamos a trabajar y como los vamos a unir
+# Crear el esquema relacional 
+grViz("
+digraph esquema_relacional {
+  graph [layout = dot, rankdir = LR, fontname = Helvetica, fontsize = 12]
+
+  # Definición de los nodos para las tablas
+  node [shape = rectangle, style = filled, fillcolor = lightblue, fontname = Helvetica]
+
+  # Tabla Horas_de_Sol
+  Horas_de_Sol [label = 'Horas_de_Sol\nComunidad (String)\nProvincia (String)\nHoras_de_sol (Numeric)\nHora_solar_pico (Numeric)']
+
+  # Tabla Cataratas
+  Cataratas [label = 'Cataratas\nComunidad.autónoma (String)\nCataratas (String)\nSexo (String)\nvalue (Numeric)']
+
+  # Establecer que la conexion va a estar entre las comunidades
+  edge [arrowhead = none, fontsize = 10]
+  Horas_de_Sol -> Cataratas [label = 'Comunidad', color = grey, style = dashed]
+
+  # Añadir colores y detalles
+  subgraph cluster_1 {
+    label = 'Datos de la tabla Horas_de_Sol'
+    style=dotted
+    color=blue
+    Horas_de_Sol
+  }
+
+  subgraph cluster_2 {
+    label = 'Datos de la tabla Cataratas'
+    style=dotted
+    color=red
+    Cataratas
+  }
+}
+")
+
 
 #Antes de empezar a manejar los datos, crearemos un mapa para ver reflejadas tanto las cataratas
 #como las horas de sol por regiones, en mapas distintivos para cada una de ellas
