@@ -20,8 +20,8 @@ Determinar la relación entre la exposición a la luz solar y el desarrollo de c
 ### **Objetivos específicos**
 Nos centraremos en unos objetivos específicos:
 
-1. ¿Cuál es la distribución geográfica y temporal de la incidencia de cataratas en la población de estudio?
-2. ¿Qué niveles de exposición a la luz solar se registran en las distintas regiones y cómo varían a lo largo del tiempo?
+1. ¿Cuál es la distribución geográfica de la incidencia de cataratas en la población de estudio?
+2. ¿Qué niveles de exposición a la luz solar se registran en las distintas regiones ?
 3. ¿Existe una correlación estadísticamente significativa entre los niveles de exposición a la luz solar y la incidencia de cataratas?
 
 # **Materiales y métodos**
