@@ -143,6 +143,37 @@ mapa_espana_completo <- mapa_espana %>%
   left_join(df_solo_cataratas, by = c("NAME_1" = "Comunidad.autónoma"))
 
 # Crear el mapa con las cataratas
+#Cambiamos los nombres de las comunidades para que coincidan y poder hacer un join
+df_solo_cataratas <- df_solo_cataratas %>%
+  mutate(
+    Comunidad.autónoma = case_when(
+      Comunidad.autónoma == "01 Andalucía" ~ "Andalucía",
+      Comunidad.autónoma == "02 Aragón" ~ "Aragón",
+      Comunidad.autónoma == "03 Asturias, Principado de" ~ "Asturias",
+      Comunidad.autónoma == "04 Balears, Illes" ~ "Islas Baleares",
+      Comunidad.autónoma == "05 Canarias" ~ "Islas Canarias",
+      Comunidad.autónoma == "06 Cantabria" ~ "Cantabria",
+      Comunidad.autónoma == "07 Castilla y León" ~ "Castilla y León",
+      Comunidad.autónoma == "08 Castilla - La Mancha" ~ "Castilla La-Mancha",
+      Comunidad.autónoma == "09 Cataluña" ~ "Cataluña",
+      Comunidad.autónoma == "10 Comunitat Valenciana" ~ "Comunidad Valenciana",
+      Comunidad.autónoma == "11 Extremadura" ~ "Extremadura",
+      Comunidad.autónoma == "12 Galicia" ~ "Galicia",
+      Comunidad.autónoma == "13 Madrid, Comunidad de" ~ "Madrid",
+      Comunidad.autónoma == "14 Murcia, Región de" ~ "Murcia",
+      Comunidad.autónoma == "15 Navarra, Comunidad Foral de" ~ "Navarra",
+      Comunidad.autónoma == "16 País Vasco" ~ "País Vasco",
+      Comunidad.autónoma == "17 Rioja, La" ~ "La Rioja",
+      Comunidad.autónoma == "18 Ceuta" ~ "Ceuta",
+      Comunidad.autónoma == "19 Melilla" ~ "Melilla",
+      Comunidad.autónoma == "Total Nacional" ~ "Total Nacional",
+      TRUE ~ Comunidad.autónoma  # Dejar sin cambios si no coincide
+    )
+  )%>% 
+  filter(!Comunidad.autónoma %in% c("Total Nacional"))
+
+print(df_solo_cataratas)
+
 
 df_solo_cataratas$Comunidad.autónoma <- trimws(df_solo_cataratas$Comunidad.autónoma)  # Eliminar espacios extra
 mapa_espana_completo$NAME_1 <- trimws(mapa_espana_completo$NAME_1)  # Eliminar espacios extra
@@ -165,6 +196,7 @@ ggplot(data = mapa_espana_completo) +
 #Calculamos la media de horas de sol para cada comunidad usando tapply.
 media_horas_sol <- tapply(df_datos_solar$Horas_de_sol, df_datos_solar$Comunidad, mean)
 print(media_horas_sol)
+df_media_horas_sol <- as.data.frame(media_horas_sol)
 
 #A continuación, proporcionamos una alternativa a la creación manual del data frame.
 print(df_datos_solar)
@@ -211,41 +243,19 @@ df_sol_clasificado <- df_media_horas_sol %>%
 
 str(df_sol_clasificado)
 
+# Crear una nueva columna "comunidad" con los nombres de las filas
+df_sol_clasificado$Comunidad <- rownames(df_sol_clasificado)
+# Reordenar las columnas para que "comunidad" sea la primera
+df_sol_clasificado <- df_sol_clasificado[, c("Comunidad", "media_horas_sol", "clasificacion")]
+
+# Mostrar el resultado
+print(df_sol_clasificado)
+
 df_sol_definitivo <- df_sol_clasificado %>%
-  select(Comunidad,Media_horas_sol,clasificacion)
+  select(Comunidad,media_horas_sol,clasificacion)
 
 df_sol_definitivo
 
-#Cambiamos los nombres de las comunidades para que coincidan y poder hacer un join
-df_solo_cataratas <- df_solo_cataratas %>%
-  mutate(
-    Comunidad.autónoma = case_when(
-      Comunidad.autónoma == "01 Andalucía" ~ "Andalucía",
-      Comunidad.autónoma == "02 Aragón" ~ "Aragón",
-      Comunidad.autónoma == "03 Asturias, Principado de" ~ "Asturias",
-      Comunidad.autónoma == "04 Balears, Illes" ~ "Islas Baleares",
-      Comunidad.autónoma == "05 Canarias" ~ "Islas Canarias",
-      Comunidad.autónoma == "06 Cantabria" ~ "Cantabria",
-      Comunidad.autónoma == "07 Castilla y León" ~ "Castilla y León",
-      Comunidad.autónoma == "08 Castilla - La Mancha" ~ "Castilla La-Mancha",
-      Comunidad.autónoma == "09 Cataluña" ~ "Cataluña",
-      Comunidad.autónoma == "10 Comunitat Valenciana" ~ "Comunidad Valenciana",
-      Comunidad.autónoma == "11 Extremadura" ~ "Extremadura",
-      Comunidad.autónoma == "12 Galicia" ~ "Galicia",
-      Comunidad.autónoma == "13 Madrid, Comunidad de" ~ "Madrid",
-      Comunidad.autónoma == "14 Murcia, Región de" ~ "Murcia",
-      Comunidad.autónoma == "15 Navarra, Comunidad Foral de" ~ "Navarra",
-      Comunidad.autónoma == "16 País Vasco" ~ "País Vasco",
-      Comunidad.autónoma == "17 Rioja, La" ~ "La Rioja",
-      Comunidad.autónoma == "18 Ceuta" ~ "Ceuta",
-      Comunidad.autónoma == "19 Melilla" ~ "Melilla",
-      Comunidad.autónoma == "Total Nacional" ~ "Total Nacional",
-      TRUE ~ Comunidad.autónoma  # Dejar sin cambios si no coincide
-    )
-  )%>% 
-  filter(!Comunidad.autónoma %in% c("Total Nacional"))
-
-print(df_solo_cataratas)
 
 #Unimos las dos tablas mediante la columna de la Comunidad Autónoma
 df_final <- df_solo_cataratas %>%
@@ -256,15 +266,15 @@ df_final
 #Ordenamos de mayor a menor en función de las horas de sol
 df_final_sol<-df_final%>%
   group_by(Comunidad.autónoma)%>%
-  select(Media_horas_sol,clasificacion,Sexo,value)%>%
-  arrange(desc(Media_horas_sol))
+  select(media_horas_sol,clasificacion,Sexo,value)%>%
+  arrange(desc(media_horas_sol))
 
 df_final_sol
 
 #Ordenamos de mayor a menor en función de las cataratas
 df_final_cataratas<-df_final%>%
   group_by(Comunidad.autónoma)%>%
-  select(Media_horas_sol,clasificacion,Sexo,value)%>%
+  select(media_horas_sol,clasificacion,Sexo,value)%>%
   arrange(desc(value))
 
 df_final_cataratas
@@ -272,26 +282,26 @@ df_final_cataratas
 #Realizamos el estudio en función de los sexos
 df_mujeres<-df_final%>%
   group_by(Comunidad.autónoma)%>%
-  select(Media_horas_sol,clasificacion,Sexo,value)%>%
+  select(media_horas_sol,clasificacion,Sexo,value)%>%
   filter(Sexo=="Mujeres")%>%
-  arrange(desc(Media_horas_sol))
+  arrange(desc(media_horas_sol))
 
 df_mujeres
 
 df_hombres<- df_final%>%
   group_by(Comunidad.autónoma)%>%
-  select(Media_horas_sol,clasificacion,Sexo,value)%>%
+  select(media_horas_sol,clasificacion,Sexo,value)%>%
   filter(Sexo=="Hombres")%>%
-  arrange(desc(Media_horas_sol))
+  arrange(desc(media_horas_sol))
 
 df_hombres
 
 #Incluimos un df para ambos sexos, pero haremos los estudios separando hombres y mujeres
 df_ambos<-df_final%>%
   group_by(Comunidad.autónoma)%>%
-  select(Media_horas_sol,clasificacion,Sexo,value)%>%
+  select(media_horas_sol,clasificacion,Sexo,value)%>%
   filter(Sexo=="Ambos sexos")%>%
-  arrange(desc(Media_horas_sol))
+  arrange(desc(media_horas_sol))
 
 df_ambos
 
@@ -303,7 +313,7 @@ library(dplyr)
 #Empezamos por el grafico de cataratas-horas de sol en las comunidades, solo para mujeres:
 
 ggplot(data = df_mujeres, aes(x = reorder(Comunidad.autónoma,-value), y = value) ) +
-  geom_bar(stat = "identity", aes(fill = Media_horas_sol) ) +
+  geom_bar(stat = "identity", aes(fill = media_horas_sol) ) +
   labs(x = "Comunidad Autónoma", 
        y = "Incidencia de Cataratas (%)", 
        title = "Incidencia de Cataratas en Mujeres según Comunidad Autónoma", 
@@ -314,7 +324,7 @@ ggplot(data = df_mujeres, aes(x = reorder(Comunidad.autónoma,-value), y = value
 
 #Realizamos el mismo gráfico para hombres
 ggplot(data = df_hombres, aes(x = reorder(Comunidad.autónoma,-value), y = value) ) +
-  geom_bar(stat = "identity", aes(fill = Media_horas_sol) ) +
+  geom_bar(stat = "identity", aes(fill = media_horas_sol) ) +
   labs(x = "Comunidad Autónoma", 
        y = "Incidencia de Cataratas (%)", 
        title = "Incidencia de Cataratas en Hombres según Comunidad Autónoma", 
@@ -328,7 +338,7 @@ df_hombres$Sexo <- "Hombres"
 
 df_combinado <- data.frame(
   Comunidad.autónoma = c(df_mujeres$Comunidad.autónoma, df_hombres$Comunidad.autónoma),
-  Media_horas_sol = c(df_mujeres$Media_horas_sol, df_hombres$Media_horas_sol),
+  Media_horas_sol = c(df_mujeres$media_horas_sol, df_hombres$media_horas_sol),
   clasificacion = c(df_mujeres$clasificacion, df_hombres$clasificacion),
   Sexo = c(df_mujeres$Sexo, df_hombres$Sexo),
   value = c(df_mujeres$value, df_hombres$value)
