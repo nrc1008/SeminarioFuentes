@@ -264,7 +264,9 @@ mapa_espana_completo <- mapa_espana_completo %>%
 head(mapa_espana_completo)
 ```
 
-```{r, echo=TRUE}
+
+
+
 ggplot(data = mapa_espana_completo) +
   geom_sf(aes(fill = value)) +  
   scale_fill_viridis_c() +  
@@ -273,10 +275,6 @@ ggplot(data = mapa_espana_completo) +
        fill = "Cataratas (Valor)") +
   theme(axis.text = element_blank(),
         axis.title = element_blank())
-```
-
-
-
 
 ```{r, echo=TRUE}
 # Calcular la media de Horas de Sol por Comunidad
