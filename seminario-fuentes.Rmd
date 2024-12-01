@@ -227,9 +227,6 @@ mapa_espana_completo <- mapa_espana_completo %>%
 
 head(mapa_espana_completo)
 ```
-
-
-```{r, echo=TRUE}
 ggplot(data = mapa_espana_completo) +
   geom_sf(aes(fill = value)) +  
   scale_fill_viridis_c() +  
@@ -238,7 +235,8 @@ ggplot(data = mapa_espana_completo) +
        fill = "Cataratas (Valor)") +
   theme(axis.text = element_blank(),
         axis.title = element_blank())
-```
+
+
 
 
 
@@ -259,9 +257,6 @@ print(df_datos_solar)
 ```{r, echo=FALSE}
 colnames(df_datos_solar)
 ```
-
-
-```{r, echo=FALSE}
 # Primero, pivotamos los datos a formato largo
 df_sol_largo <- df_datos_solar %>%
   pivot_longer(
@@ -270,10 +265,9 @@ df_sol_largo <- df_datos_solar %>%
     values_to = "Horas de sol"     # Nombre de la nueva columna para los valores de horas de sol
   )
 print(df_sol_largo)
-```
 
 
-```{r, echo=FALSE}
+
 # Separar 'Comunidad.Provincia' en dos columnas con el comando separate
 df_sol_largo <- df_sol_largo %>%
   separate(
@@ -284,22 +278,19 @@ df_sol_largo <- df_sol_largo %>%
 
 # Verificamos el dataframe después de la transformación
 print(head(df_sol_largo))
-```
 
 
-```{r, echo=FALSE}
 datatable(df_sol_largo)
-```
 
 
-```{r, echo=FALSE}
 # Calculamos la media de las horas de sol por comunidad, para ello importamos una función que hemos realizado
 source("FUNCTIONS/CalcularMediaSol.R")
 calcular_media_horas_sol(df_sol_largo)
 
 # Mostramos el resultado final
 print(media_horas_sol)
-```
+
+
 
 
 ```{r, echo=TRUE}
