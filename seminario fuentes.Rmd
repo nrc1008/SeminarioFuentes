@@ -26,11 +26,12 @@ Nos centraremos en unos objetivos específicos:
 
 # **Materiales y métodos**
 ```{r}
-#install.packages("jsonlite")
-#install.packages("pxR")
-#options(timeout = 300)
-#install.packages("sf")
-#install.packages("DiagrammeR")
+install.packages("jsonlite")
+install.packages("pxR")
+options(timeout = 300)
+install.packages("sf")
+install.packages("DiagrammeR")
+install.packages("ggplot2")
 
 
 library(ggplot2)
