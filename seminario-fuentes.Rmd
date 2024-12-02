@@ -47,14 +47,6 @@ Algunos que hemos encontrado:
  También , de la clínica oftolmatológica de Londres, este [estudio](https://www.eyecliniclondon.com/blog/sun-cause-cataracts/)
  
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-
-
 ```{r,echo = TRUE}
 #Importamos los datos con cada formato correspondiente
 
@@ -69,23 +61,8 @@ datos_solar<-fromJSON("DATA/INPUT/LuzSolarProvincias.json")
 df_datos_solar<-as.data.frame(datos_solar)
 df_datos_cataratas<-as.data.frame(datos_cataratas)
 
-summary(df_datos_cataratas)
 ```
 
-
-```{r,echo = TRUE}
-summary(df_datos_solar)
-```
-
-
-```{r,echo = TRUE}
-str(df_datos_cataratas)
-```
-
-
-```{r,echo = TRUE}
-str(df_datos_solar)
-```
 
 De las distintas enfermedades de nuestros datos, seleccionamos las de interés, que son las cataratas
 
@@ -93,22 +70,17 @@ De las distintas enfermedades de nuestros datos, seleccionamos las de interés, 
 df_solo_cataratas <- df_datos_cataratas %>%
   filter(Enfermedades == "Cataratas")
 
-# Ver los primeros registros filtrados
-head(df_solo_cataratas)
 ```
-
-
-
-datatable(
-  df_solo_cataratas,
-  options = list(pageLength = 5)
-)
 
 
 
 ```{r,echo = TRUE}
-print(df_solo_cataratas)
+datatable(
+  df_solo_cataratas,
+  options = list(pageLength = 5)
+)
 ```
+
 
 
 ```{r,echo = TRUE}
@@ -138,7 +110,7 @@ df_datos_solar <- data.frame(
 ```
 
 ```{r,echo = TRUE}
-#datatable(df_datos_solar)
+datatable(df_datos_solar)
 ```
 
 Para tener un concepto mas visual antes de empezar a relacionar nuestros datos, vamos a crear un esquema relacional para explicaros con que data frames vamos a trabajar y como los vamos a unir
@@ -185,7 +157,6 @@ como las horas de sol por regiones, en mapas distintivos para cada una de ellas
 
 ```{r,echo=TRUE}
 mapa_espana <- st_read("./DATA/INPUT/ESP_adm1.shp")
-print(mapa_espana)
 ```
 
 
@@ -246,7 +217,6 @@ df_solo_cataratas <- df_solo_cataratas %>%
   )%>% 
   filter(!Comunidad.autónoma %in% c("Total Nacional"))
 
-print(df_solo_cataratas)
 ```
 
 ```{r, echo=TRUE}
@@ -261,10 +231,7 @@ mapa_espana_completo$NAME_1 <- trimws(mapa_espana_completo$NAME_1)  # Eliminar e
 mapa_espana_completo <- mapa_espana_completo %>%
   left_join(df_solo_cataratas, by = c("NAME_1" = "Comunidad.autónoma"))
 
-head(mapa_espana_completo)
 ```
-
-
 
 
 ggplot(data = mapa_espana_completo) +
@@ -275,6 +242,7 @@ ggplot(data = mapa_espana_completo) +
        fill = "Cataratas (Valor)") +
   theme(axis.text = element_blank(),
         axis.title = element_blank())
+
 
 ```{r, echo=TRUE}
 # Calcular la media de Horas de Sol por Comunidad
@@ -288,45 +256,55 @@ df_media_horas_sol <- as.data.frame(media_horas_sol)
 ```
 
 A continuación, proporcionamos una alternativa a la creación manual del data frame.
-```{r, echo=FALSE}
-print(df_datos_solar)
-```
 
+Primero, pivotamos los datos a formato largo
 
-```{r, echo=FALSE}
-colnames(df_datos_solar)
-```
-# Primero, pivotamos los datos a formato largo
 df_sol_largo <- df_datos_solar %>%
+
   pivot_longer(
+  
     cols = everything(), # Seleccionar todas las columnas para pivotar
+    
     names_to = "Comunidad.Provincia", # Nombre de la nueva columna para las comunidades y provincias
+    
     values_to = "Horas de sol"     # Nombre de la nueva columna para los valores de horas de sol
+    
   )
+  
 print(df_sol_largo)
 
 
 
-# Separar 'Comunidad.Provincia' en dos columnas con el comando separate
+Separar 'Comunidad.Provincia' en dos columnas con el comando separate
+
 df_sol_largo <- df_sol_largo %>%
+
   separate(
+  
     col = Comunidad.Provincia,
+    
     into = c("Comunidad", "Provincia"),
+    
     sep = "\\."
+    
   )
 
-# Verificamos el dataframe después de la transformación
+Verificamos el dataframe después de la transformación
+
 print(head(df_sol_largo))
 
 
 datatable(df_sol_largo)
 
 
-# Calculamos la media de las horas de sol por comunidad, para ello importamos una función que hemos realizado
+Calculamos la media de las horas de sol por comunidad, para ello importamos una función que hemos realizado
+
 source("FUNCTIONS/CalcularMediaSol.R")
+
 calcular_media_horas_sol(df_sol_largo)
 
-# Mostramos el resultado final
+Mostramos el resultado final
+
 print(media_horas_sol)
 
 
@@ -344,7 +322,6 @@ df_sol_clasificado <- df_media_horas_sol %>%
   )
 )
 
-str(df_sol_clasificado)
 ```
 
 ```{r, echo=TRUE}
@@ -355,8 +332,6 @@ df_sol_clasificado$Comunidad <- rownames(df_sol_clasificado)
 # Reordenamos las columnas para que "comunidad" sea la primera
 df_sol_clasificado <- df_sol_clasificado[, c("Comunidad", "media_horas_sol", "clasificacion")]
 
-# Mostrar el resultado
-print(df_sol_clasificado)
 ```
 
 
@@ -364,7 +339,6 @@ print(df_sol_clasificado)
 df_sol_definitivo <- df_sol_clasificado %>%
   select(Comunidad,media_horas_sol,clasificacion)
 
-df_sol_definitivo
 ```
 
 
@@ -373,7 +347,6 @@ df_sol_definitivo
 df_final <- df_solo_cataratas %>%
   left_join(df_sol_definitivo, by = c("Comunidad.autónoma"="Comunidad")) #Realizamos un join sin necesidad de cambiar el nombre del atributo en una de las tablas
 
-df_final
 ```
 
 
@@ -384,12 +357,11 @@ df_final_sol<-df_final%>%
   select(media_horas_sol,clasificacion,Sexo,value)%>%
   arrange(desc(media_horas_sol))
 
-df_final_sol
 ```
 
 
 ```{r, echo=TRUE}
-#datatable(df_final_sol)
+datatable(df_final_sol)
 ```
 
 
@@ -400,12 +372,11 @@ df_final_cataratas<-df_final%>%
   select(media_horas_sol,clasificacion,Sexo,value)%>%
   arrange(desc(value))
 
-df_final_cataratas
 ```
 
 
 ```{r, echo=TRUE}
-#datatable(df_final_cataratas)
+datatable(df_final_cataratas)
 ```
 
 
@@ -417,7 +388,7 @@ df_mujeres<-df_final%>%
   filter(Sexo=="Mujeres")%>%
   arrange(desc(media_horas_sol))
 
-df_mujeres
+datatable(df_mujeres)
 ```
 
 
@@ -428,7 +399,7 @@ df_hombres<- df_final%>%
   filter(Sexo=="Hombres")%>%
   arrange(desc(media_horas_sol))
 
-df_hombres
+datatable(df_hombres)
 ```
 
 Incluimos un df para ambos sexos, pero haremos los estudios separando hombres y mujeres
@@ -439,7 +410,7 @@ df_ambos<-df_final%>%
   filter(Sexo=="Ambos sexos")%>%
   arrange(desc(media_horas_sol))
 
-df_ambos
+datatable(df_ambos)
 ```
 
 Graficamos:
@@ -484,14 +455,13 @@ df_combinado <- data.frame(
   value = c(df_mujeres$value, df_hombres$value)
 )
 
-print(df_combinado)
 ```
 
 
 ```{r, echo=TRUE}
 ggplot(df_combinado, aes(x = Media_horas_sol, y = value , color = Sexo)) +
   geom_point(size = 3, alpha = 0.7) +
-  geom_smooth(method = "lm", se = FALSE, linetype = "solid") +
+  geom_smooth(method = "loess", se = FALSE, linetype = "solid") +
   labs(
     title = "Relación entre horas de sol y porcentaje de cataratas",
     x = "Media de horas de sol",
@@ -510,17 +480,8 @@ https://rstudio.github.io/DT/
 https://tidyr.tidyverse.org/reference/separate.html
 OpenAI. (2024). ChatGPT (noviembre de 2024). Disponible en https://chat.openai.com
 https://mappinggis.com/2019/07/creacion-de-mapas-con-r-y-ggplot2/#Primeros_pasos_para_crear_mapas_con_R
+https://www.ine.es/jaxi/Datos.htm?tpx=48106#_tabs-tabla
+https://github.com/rich-iannone/DiagrammeR
 
 
 
-```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
