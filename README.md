@@ -1,4 +1,4 @@
-# Relación entre la exposición a la luz solar y el desarrollo de cataratas.
+# Relación entre la exposición a la luz solar y el desarrollo de cataratas. <img src='IMAGES/universidad_burgos.jpg' align="right" height="120" />
 Integrantes: Niamey Rey Clar, Claudia Tundidor Zamora y María Gómez Aparicio. 
 
 ## Introducción: 
