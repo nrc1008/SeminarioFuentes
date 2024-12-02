@@ -233,16 +233,16 @@ mapa_espana_completo <- mapa_espana_completo %>%
 
 ```
 
-
+```{r, echo=TRUE}
 ggplot(data = mapa_espana_completo) +
-  geom_sf(aes(fill = value)) +  
+  geom_sf(aes(fill = value.y)) +  
   scale_fill_viridis_c() +  
   theme_minimal() + 
   labs(title = "Cataratas por Comunidad Autónoma en España", 
        fill = "Cataratas (Valor)") +
   theme(axis.text = element_blank(),
         axis.title = element_blank())
-
+```
 
 ```{r, echo=TRUE}
 # Calcular la media de Horas de Sol por Comunidad
@@ -474,6 +474,17 @@ ggplot(df_combinado, aes(x = Media_horas_sol, y = value , color = Sexo)) +
     axis.title = element_text(size = 12)
   )
 ```
+
+# Conclusiones
+El análisis que hemos realizado sobre la relación entre las horas de sol y la incidencia de
+cataratas, concluye que , en general, las comunidades con mayor número de horas de sol, suelen
+registrar una mayor prevalencia de cataratas. Sin embargo, hemos visto algunas excepciones que
+consideramos que pueden explicarse porque el estudio se ha centrado en las horas de sol y no en
+la exposición directa a los rayos UV. Es importante tener en cuenta que el número de horas de sol
+en una región no implica necesariamente que su población esté expuesta de forma constante a la
+radiación, ya que factores como hábitos de vida o protección solar pueden infuir en la exposición
+real.
+
 
 # **Bibliografía**
 https://rstudio.github.io/DT/
